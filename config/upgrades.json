@@ -1,10 +1,10 @@
 {
-  "_note": "Upgrade tracks (PRD section 5). Cost(n) = base_cost x growth^n. Effects stack per level. Starting values only: tune with tools/sim.",
+  "_note": "Upgrade tracks (PRD section 5). Cost(n) = base_cost x growth^n. Effects add per level (quality: +bonus × base revenue per level); only milestones multiply. Starting values only: tune with tools/sim.",
   "tracks": {
     "equipment": {
       "description": "Shorter cycle time",
       "growth": 1.12,
-      "effect": { "cycle_time_multiplier_per_level": 0.97, "min_cycle_seconds": 0.25 }
+      "effect": { "cycle_time_multiplier_per_level": 0.93, "min_cycle_seconds": 0.25 }
     },
     "capacity": {
       "description": "More customers per cycle",
@@ -14,7 +14,7 @@
     "quality": {
       "description": "More revenue per customer",
       "growth": 1.10,
-      "effect": { "revenue_multiplier_per_level": 1.08 }
+      "effect": { "revenue_bonus_per_level": 0.4 }
     },
     "marketing": {
       "description": "Higher customer arrival rate (raises the demand cap)",

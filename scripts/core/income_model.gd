@@ -29,8 +29,11 @@ static func customers_per_cycle(config: GameConfig, business: Dictionary, state:
 
 
 static func revenue_per_customer(config: GameConfig, business: Dictionary, state: Dictionary) -> BigNumber:
-	var per_level: float = float(config.get_track("quality")["effect"]["revenue_multiplier_per_level"])
-	return power_product(float(business["base_revenue_per_customer"]), per_level, _level(state, "quality"))
+	# Additive, not compounding: four compounding tracks multiply each other and
+	# outgrow every cost curve (tools/sim showed income running away). Only the
+	# ×2 milestones compound, at ~1.028 per level, well under cost growth.
+	var bonus: float = float(config.get_track("quality")["effect"]["revenue_bonus_per_level"])
+	return BigNumber.from_float(float(business["base_revenue_per_customer"]) * (1.0 + _level(state, "quality") * bonus))
 
 
 ## ×2 (config) for every 25 levels (config) on each track, stacking across tracks.

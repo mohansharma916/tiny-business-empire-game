@@ -22,7 +22,7 @@ static func config() -> GameConfig:
 		"tracks": {
 			"equipment": {"growth": 1.1, "effect": {"cycle_time_multiplier_per_level": 0.5, "min_cycle_seconds": 0.25}},
 			"capacity": {"growth": 1.2, "effect": {"capacity_added_per_level": 1.0}},
-			"quality": {"growth": 1.15, "effect": {"revenue_multiplier_per_level": 2.0}},
+			"quality": {"growth": 1.15, "effect": {"revenue_bonus_per_level": 0.5}},
 			"marketing": {"growth": 1.1, "effect": {"demand_added_per_level": 1.0}},
 		},
 		"staff": {
