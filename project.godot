@@ -9,7 +9,7 @@ config_version=5
 config/name="Tiny Business Empire"
 config/description="Idle tycoon: turn a chai stall into a business empire."
 config/features=PackedStringArray("4.4", "GL Compatibility")
-run/main_scene="res://scenes/boot.tscn"
+run/main_scene="res://scenes/main_city.tscn"
 run/low_processor_mode=false
 config/quit_on_go_back=false
 

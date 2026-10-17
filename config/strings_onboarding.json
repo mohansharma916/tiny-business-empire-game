@@ -1,0 +1,29 @@
+{
+  "tutorial": {
+    "skip": "Skip Tutorial",
+    "step_1_title": "Welcome to Starter Street!",
+    "step_1_desc": "Press and hold the Chai Stall to brew fresh tea for your first customer.",
+    "step_2_title": "First Sale!",
+    "step_2_desc": "You earned cash! Tap 'UPGRADE CHAI STALL' to improve your equipment.",
+    "step_3_title": "Grow Your Empire",
+    "step_3_desc": "Level up your stall tracks or hire a manager to automate tea production!",
+    "step_complete_title": "You're in Business!",
+    "step_complete_desc": "Complete Objectives to earn bonuses and expand across India."
+  },
+  "objectives": {
+    "title": "Objectives & Goals",
+    "subtitle": "Complete tasks to earn cash bonuses and grow your empire",
+    "claim": "Claim ₹ %s",
+    "completed": "Completed ✓",
+    "in_progress": "In Progress"
+  },
+  "empire": {
+    "title": "Empire Overview",
+    "subtitle": "Starter Street • City Level %d",
+    "stats_businesses": "Businesses Owned",
+    "stats_lifetime": "Lifetime Earnings",
+    "stats_income": "Total Income Rate",
+    "stats_city_level": "City Expansion Level",
+    "next_expansion": "Next Location: Market Lane (Unlocked at 3 businesses & ₹ 50K earnings)"
+  }
+}

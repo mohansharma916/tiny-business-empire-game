@@ -1,0 +1,208 @@
+[gd_scene format=3 uid="uid://b5e67y7m0a4er"]
+
+[ext_resource type="Script" path="res://scripts/ui/empire_overview_screen.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.12, 0.12, 0.16, 0.98)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.18, 0.18, 0.24, 0.9)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+content_margin_left = 14.0
+content_margin_top = 12.0
+content_margin_right = 14.0
+content_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_expansion"]
+bg_color = Color(0.15, 0.22, 0.32, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.6, 0.9, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+content_margin_left = 16.0
+content_margin_top = 14.0
+content_margin_right = 16.0
+content_margin_bottom = 14.0
+
+[node name="EmpireOverviewScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.72)
+
+[node name="SafeContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 60
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 50
+
+[node name="PanelRoot" type="PanelContainer" parent="SafeContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="SafeContainer/PanelRoot"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="SafeContainer/PanelRoot/VBox"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.3, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "🏙️ EMPIRE OVERVIEW"
+
+[node name="CloseButton" type="Button" parent="SafeContainer/PanelRoot/VBox/Header"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "✕"
+
+[node name="SubTitle" type="Label" parent="SafeContainer/PanelRoot/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 14
+text = "Your business footprint and expansion milestones across India."
+
+[node name="StatsGrid" type="GridContainer" parent="SafeContainer/PanelRoot/VBox"]
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="BusinessesCard" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="SafeContainer/PanelRoot/VBox/StatsGrid/BusinessesCard"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="SafeContainer/PanelRoot/VBox/StatsGrid/BusinessesCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "BUSINESSES OWNED"
+
+[node name="ValLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/StatsGrid/BusinessesCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 20
+text = "1 / 5"
+
+[node name="IncomeCard" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="SafeContainer/PanelRoot/VBox/StatsGrid/IncomeCard"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="SafeContainer/PanelRoot/VBox/StatsGrid/IncomeCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "INCOME RATE"
+
+[node name="ValLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/StatsGrid/IncomeCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.95, 0.5, 1)
+theme_override_font_sizes/font_size = 20
+text = "₹ 0 / s"
+
+[node name="LifetimeCard" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="SafeContainer/PanelRoot/VBox/StatsGrid/LifetimeCard"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="SafeContainer/PanelRoot/VBox/StatsGrid/LifetimeCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "CURRENT WEALTH"
+
+[node name="ValLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/StatsGrid/LifetimeCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.75, 0.3, 1)
+theme_override_font_sizes/font_size = 20
+text = "₹ 50"
+
+[node name="CityLevelCard" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="SafeContainer/PanelRoot/VBox/StatsGrid/CityLevelCard"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="SafeContainer/PanelRoot/VBox/StatsGrid/CityLevelCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "LOCATION"
+
+[node name="ValLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/StatsGrid/CityLevelCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.95, 1)
+theme_override_font_sizes/font_size = 15
+text = "Starter Street"
+
+[node name="ExpansionCard" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_expansion")
+
+[node name="VBox" type="VBoxContainer" parent="SafeContainer/PanelRoot/VBox/ExpansionCard"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="SafeContainer/PanelRoot/VBox/ExpansionCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "🚀 Next Expansion: Market Lane"
+
+[node name="DescLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/ExpansionCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.85, 0.95, 1)
+theme_override_font_sizes/font_size = 13
+text = "Own 3 businesses and earn ₹ 50K lifetime cash to expand into Market Lane."
+autowrap_mode = 2
