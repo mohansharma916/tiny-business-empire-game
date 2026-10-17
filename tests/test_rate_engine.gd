@@ -53,9 +53,11 @@ func test_capacity_is_capped_by_demand() -> void:
 	assert_almost_eq(_rate(), 20.0, EPSILON, "min(4, 4) × 10 / 2")
 
 
-func test_quality_multiplies_revenue() -> void:
+func test_quality_adds_revenue_linearly() -> void:
 	_set_levels({"quality": 2})
-	assert_almost_eq(_rate(), 20.0, EPSILON, "1 × 10 × 2² / 2")
+	assert_almost_eq(_rate(), 10.0, EPSILON, "1 × 10 × (1 + 2 × 0.5) / 2")
+	_set_levels({"quality": 4})
+	assert_almost_eq(_rate(), 15.0, EPSILON, "1 × 10 × (1 + 4 × 0.5) / 2")
 
 
 func test_equipment_shortens_cycle_down_to_minimum() -> void:
@@ -230,3 +232,35 @@ func test_buy_max() -> void:
 	assert_eq(svc.buy_upgrade(CHAI, "equipment", svc.BULK_MAX), expected)
 	assert_true(svc.get_cash().is_less_than(svc.get_upgrade_cost(CHAI, "equipment")))
 	assert_false(svc.get_cash().is_negative())
+
+
+# --- Businesses ---------------------------------------------------------------------
+
+func test_buy_business_needs_cash_and_requirements() -> void:
+	assert_true(svc.can_unlock_business("cart"), "requires chai_stall, which is owned")
+	_give_cash(999.0)
+	assert_false(svc.buy_business("cart"))
+	_give_cash(1000.0)
+	watch_signals(svc)
+	assert_true(svc.buy_business("cart"))
+	assert_signal_emitted_with_parameters(svc, "business_purchased", ["cart"])
+	assert_true(svc.get_cash().is_zero())
+	assert_true(svc.get_business_state("cart")["owned"])
+	assert_false(svc.buy_business("cart"), "already owned")
+	assert_false(svc.buy_business(CHAI), "already owned")
+
+
+func test_buy_business_blocked_by_missing_requirement() -> void:
+	svc._businesses[CHAI]["owned"] = false
+	_give_cash(1e6)
+	assert_false(svc.can_unlock_business("cart"))
+	assert_false(svc.buy_business("cart"))
+
+
+func test_staff_costs() -> void:
+	assert_almost_eq(svc.get_staff_cost(CHAI, "worker").to_float(), 50.0, EPSILON)
+	assert_almost_eq(svc.get_staff_cost(CHAI, "manager").to_float(), 500.0, EPSILON)
+	_give_cash(500.0)
+	svc.hire_staff(CHAI, "manager")
+	assert_true(svc.get_staff_cost(CHAI, "manager").is_zero(), "already hired")
+	assert_true(svc.get_staff_cost(CHAI, "chef").is_zero())

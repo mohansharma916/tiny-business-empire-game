@@ -122,8 +122,26 @@ func can_afford(cost: BigNumber) -> bool:
 
 ## Returns true if the business was bought (emits business_purchased).
 func buy_business(business_id: String) -> bool:
-	# TODO(core/content): unlock costs, unlock_requires and Market Lane.
-	return false
+	if not _businesses.has(business_id) or _businesses[business_id]["owned"]:
+		return false
+	var cost: BigNumber = get_business_cost(business_id)
+	if not _requirements_met(business_id) or not can_afford(cost):
+		return false
+	_spend(cost)
+	_businesses[business_id]["owned"] = true
+	recalculate_income()
+	business_purchased.emit(business_id)
+	return true
+
+
+func get_business_cost(business_id: String) -> BigNumber:
+	return BigNumber.from_float(float(config.get_business(business_id).get("unlock_cost", 0.0)))
+
+
+## True if everything except cash is in place to buy the business.
+func can_unlock_business(business_id: String) -> bool:
+	return _businesses.has(business_id) and not _businesses[business_id]["owned"] \
+		and _requirements_met(business_id)
 
 
 ## amount: 1, 10 or BULK_MAX. Returns how many levels were bought (0 = none).
@@ -154,26 +172,36 @@ func get_upgrade_cost(business_id: String, track: String, amount: int = 1) -> Bi
 	return _bulk_cost(business_id, track, count)
 
 
+## Cost of the next worker or the manager; zero if none can be hired.
+func get_staff_cost(business_id: String, role: String) -> BigNumber:
+	if not _businesses.has(business_id):
+		return BigNumber.zero()
+	var state: Dictionary = _businesses[business_id]
+	var business: Dictionary = config.get_business(business_id)
+	match role:
+		"worker":
+			if state["workers"] < int(config.get_staff("worker")["max_level"]):
+				return IncomeModel.worker_cost(config, business, state["workers"])
+		"manager":
+			if not state["has_manager"]:
+				return BigNumber.from_float(float(business["staff"]["manager_cost"]))
+	return BigNumber.zero()
+
+
 ## role: "worker" or "manager". Returns true if hired.
 func hire_staff(business_id: String, role: String) -> bool:
 	if not _is_owned(business_id):
 		return false
 	var state: Dictionary = _businesses[business_id]
-	var business: Dictionary = config.get_business(business_id)
+	var cost: BigNumber = get_staff_cost(business_id, role)
+	if cost.is_zero() or not can_afford(cost):
+		return false
 	match role:
 		"worker":
-			if state["workers"] >= int(config.get_staff("worker")["max_level"]):
-				return false
-			var cost: BigNumber = IncomeModel.worker_cost(config, business, state["workers"])
-			if not can_afford(cost):
-				return false
 			_spend(cost)
 			state["workers"] += 1
 			recalculate_income()
 		"manager":
-			var cost: BigNumber = BigNumber.from_float(float(business["staff"]["manager_cost"]))
-			if state["has_manager"] or not can_afford(cost):
-				return false
 			_spend(cost)
 			state["has_manager"] = true
 			state["cycle_running"] = false
@@ -331,6 +359,15 @@ func _new_business_state(owned: bool) -> Dictionary:
 		"owned": owned, "levels": levels, "workers": 0, "has_manager": false,
 		"cycle_running": false, "cycle_elapsed": 0.0, "boost_seconds_left": 0.0,
 	}
+
+
+func _requirements_met(business_id: String) -> bool:
+	var requires: Dictionary = config.get_business(business_id).get("unlock_requires", {})
+	for owned_id: String in requires.get("owned", []):
+		if not _is_owned(owned_id):
+			return false
+	# TODO(core/content): "location" requirements once Market Lane can be unlocked.
+	return not requires.has("location")
 
 
 func _is_owned(business_id: String) -> bool:
