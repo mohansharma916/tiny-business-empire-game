@@ -86,7 +86,7 @@ scale = Vector2(0.9375, 0.9302)
 texture = ExtResource("2_starter_bg")
 
 [node name="Plot_chai_stall" type="Node2D" parent="CityWorld/StarterStreet"]
-position = Vector2(250, 680)
+position = Vector2(250, 750)
 
 [node name="BusinessSprite" type="Sprite2D" parent="CityWorld/StarterStreet/Plot_chai_stall"]
 position = Vector2(0, -50)
@@ -146,7 +146,7 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_hitbox")
 position = Vector2(0, -110)
 
 [node name="Plot_pani_puri_cart" type="Node2D" parent="CityWorld/StarterStreet"]
-position = Vector2(530, 510)
+position = Vector2(530, 560)
 
 [node name="BusinessSprite" type="Sprite2D" parent="CityWorld/StarterStreet/Plot_pani_puri_cart"]
 position = Vector2(0, -50)
@@ -212,7 +212,7 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_hitbox")
 position = Vector2(0, -110)
 
 [node name="Plot_fruit_stand" type="Node2D" parent="CityWorld/StarterStreet"]
-position = Vector2(700, 370)
+position = Vector2(700, 420)
 
 [node name="BusinessSprite" type="Sprite2D" parent="CityWorld/StarterStreet/Plot_fruit_stand"]
 position = Vector2(0, -50)
