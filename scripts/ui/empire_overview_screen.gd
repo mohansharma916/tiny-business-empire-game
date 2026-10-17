@@ -53,10 +53,15 @@ func refresh_stats() -> void:
 	businesses_owned_label.text = "%d / 5" % owned_count
 
 	var inc: BigNumber = EconomyService.get_income_per_second()
-	income_rate_label.text = "₹ %s / s" % inc.to_formatted(false)
+	income_rate_label.text = UserSettings.format_rate(inc)
 
 	var lifetime: BigNumber = EconomyService.get_lifetime_earnings()
-	lifetime_label.text = "₹ %s" % lifetime.to_formatted(false)
+	lifetime_label.text = UserSettings.format_cash(lifetime)
 
-	city_level_label.text = "Starter Street (Lv. 1)"
-	expansion_desc.text = "Own 3 businesses and earn ₹ 50K lifetime cash to expand into Market Lane."
+	var market_unlocked: bool = EconomyService.is_location_unlocked("market_lane")
+	if market_unlocked:
+		city_level_label.text = "Market Lane (Lv. 2)"
+		expansion_desc.text = "Market Lane unlocked! You now control multiple business districts."
+	else:
+		city_level_label.text = "Starter Street (Lv. 1)"
+		expansion_desc.text = "Own 3 businesses and earn %s lifetime cash to expand into Market Lane." % UserSettings.format_cash(BigNumber.from_float(50000.0))

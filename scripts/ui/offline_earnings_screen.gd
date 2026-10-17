@@ -68,7 +68,7 @@ func show_offline_earnings(simulated_seconds: float = 3600.0) -> void:
 		time_text += " (Max 2 hr cap reached)"
 
 	time_away_label.text = time_text
-	total_cash_label.text = "₹ %s" % _current_earned.to_formatted(false)
+	total_cash_label.text = UserSettings.format_cash(_current_earned)
 
 	# Populate breakdown list
 	for child in breakdown_list.get_children():
@@ -88,7 +88,7 @@ func show_offline_earnings(simulated_seconds: float = 3600.0) -> void:
 
 		var val: BigNumber = per_business[b_id]
 		var val_lbl := Label.new()
-		val_lbl.text = "+ ₹ %s" % val.to_formatted(false)
+		val_lbl.text = "+ %s" % UserSettings.format_cash(val)
 		val_lbl.add_theme_color_override("font_color", Color(0.3, 0.9, 0.4))
 		val_lbl.add_theme_font_size_override("font_size", 15)
 
@@ -96,9 +96,9 @@ func show_offline_earnings(simulated_seconds: float = 3600.0) -> void:
 		row.add_child(val_lbl)
 		breakdown_list.add_child(row)
 
-	collect_btn.text = "COLLECT ₹ %s" % _current_earned.to_formatted(false)
+	collect_btn.text = "COLLECT %s" % UserSettings.format_cash(_current_earned)
 	var double_val: BigNumber = _current_earned.multiply_scalar(2.0)
-	double_ad_btn.text = "🎬 DOUBLE REWARD (2× ₹ %s)" % double_val.to_formatted(false)
+	double_ad_btn.text = "🎬 DOUBLE REWARD (2× %s)" % UserSettings.format_cash(double_val)
 
 	_is_open = true
 	visible = true

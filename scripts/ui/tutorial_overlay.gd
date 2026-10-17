@@ -55,7 +55,7 @@ func _apply_step(step: int) -> void:
 			title_label.text = strings.get("step_1_title", "Welcome to Starter Street!")
 			desc_label.text = strings.get("step_1_desc", "Press and hold the Chai Stall to brew fresh tea for your first customer.")
 			next_btn.visible = false # Advances automatically on serve!
-			highlight_pointer.position = Vector2(360, 420)
+			highlight_pointer.position = Vector2(220, 400)
 			highlight_pointer.visible = true
 		2:
 			title_label.text = strings.get("step_2_title", "First Sale!")

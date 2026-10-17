@@ -145,7 +145,7 @@ func _create_objective_card(obj: Dictionary, total_lvl: int, workers: int, is_au
 		btn.text = "Claimed ✓"
 		btn.disabled = true
 	elif current_val >= int(obj["target"]):
-		btn.text = "Claim ₹ %.0f" % float(obj["reward"])
+		btn.text = "Claim %s" % UserSettings.format_cash(BigNumber.from_float(float(obj["reward"])))
 		btn.pressed.connect(func(): _claim_objective(obj))
 	else:
 		btn.text = "In Progress"
