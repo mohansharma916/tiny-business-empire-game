@@ -12,7 +12,7 @@ const PRECISION_DIGITS: int = 17
 const SHORT_FORMAT_FROM_EXPONENT: int = 4
 const SHORT_SUFFIXES: PackedStringArray = ["", "K", "M", "B", "T"]
 const LETTERS: String = "abcdefghijklmnopqrstuvwxyz"
-## Guards floor() against 4.56 being stored as 4.5599999...
+## Relative nudge so floor() doesn't turn 4.56 (stored as 4.5599999…) into 4.55.
 const FORMAT_EPSILON: float = 1e-9
 
 var mantissa: float = 0.0
@@ -194,7 +194,7 @@ func _format_indian() -> String:
 	if exponent < CRORE_EXPONENT + 3:
 		return _three_significant(mantissa * pow(10.0, exponent - CRORE_EXPONENT)) + "Cr"
 	if exponent < MAX_GROUPED_CRORE_EXPONENT:
-		var crores: float = floorf(mantissa * pow(10.0, exponent - CRORE_EXPONENT) + FORMAT_EPSILON)
+		var crores: float = _floor_nudged(mantissa * pow(10.0, exponent - CRORE_EXPONENT))
 		return _group_digits(str(int(crores)), true) + "Cr"
 	# Beyond a lakh crore Indian words stop being readable; use the short scale.
 	return _format_short()
@@ -225,7 +225,7 @@ static func _three_significant(value: float) -> String:
 
 static func _truncate(value: float, decimals: int) -> String:
 	var scale: float = pow(10.0, decimals)
-	var floored: float = floorf(value * scale + FORMAT_EPSILON) / scale
+	var floored: float = _floor_nudged(value * scale) / scale
 	if decimals == 0:
 		return str(int(floored))
 	return ("%." + str(decimals) + "f") % floored
@@ -234,12 +234,16 @@ static func _truncate(value: float, decimals: int) -> String:
 ## Small values keep one decimal so a 0.5/s rate doesn't read as 0.
 static func _format_small(value: float, indian: bool) -> String:
 	const FRACTION_BELOW: float = 100.0
-	var whole: float = floorf(value + FORMAT_EPSILON)
-	if value < FRACTION_BELOW and value - whole > FORMAT_EPSILON * 10.0:
-		var tenths: float = floorf(value * 10.0 + FORMAT_EPSILON) / 10.0
+	var whole: float = _floor_nudged(value)
+	if value < FRACTION_BELOW:
+		var tenths: float = _floor_nudged(value * 10.0) / 10.0
 		if tenths > whole:
 			return "%.1f" % tenths
 	return _group_digits(str(int(whole)), indian)
+
+
+static func _floor_nudged(value: float) -> float:
+	return floorf(value * (1.0 + FORMAT_EPSILON))
 
 
 ## 1234567 → "1,234,567" (western) or "12,34,567" (Indian).

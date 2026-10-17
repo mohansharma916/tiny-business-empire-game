@@ -173,3 +173,8 @@ func test_format_indian_grouped_crores() -> void:
 
 func test_format_indian_falls_back_to_short_scale() -> void:
 	assert_eq(_bn(1e12).to_formatted(true), "1.00T")
+
+
+func test_format_tolerates_float_error_below_a_whole_number() -> void:
+	assert_eq(BigNumber.from_log10(2.0).to_formatted(), "100")
+	assert_eq(_bn(99.99999999999).to_formatted(), "100")
