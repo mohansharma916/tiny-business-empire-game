@@ -15,6 +15,13 @@ signal memory_warning
 signal focus_lost
 signal focus_gained
 
+## EconomyService (untyped: autoload scripts have no class_name). Null in tests of this class alone.
+var _economy: Node
+
+
+func _init(economy: Node = null) -> void:
+	_economy = economy
+
 
 func handle_notification(what: int) -> void:
 	match what:
@@ -32,17 +39,19 @@ func handle_notification(what: int) -> void:
 			_on_memory_warning()
 
 
+## Stop earning, then save at once: the OS may kill a backgrounded app
+## without warning. Time away is credited by offline earnings on resume.
 func _on_paused() -> void:
-	# TODO(core/saves): stop the economy tick, then save immediately
-	# (save_system.gd, AGENTS.md section 4). The OS may kill us after this.
+	if _economy:
+		_economy.stop_tick()
+		_economy.save_now()
 	# TODO(P1): submit the leaderboard score through backend_client.gd.
-	pass
 
 
 func _on_resumed() -> void:
-	# TODO(core/saves): compute offline earnings from the last save timestamp
-	# with the same income function used online, then restart the tick.
-	pass
+	if _economy:
+		_economy.check_offline_earnings()
+		_economy.start_tick()
 
 
 func _on_memory_warning() -> void:

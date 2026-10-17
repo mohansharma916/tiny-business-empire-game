@@ -2,6 +2,7 @@
   "_note": "Global economy settings. Starting values only: tune them with tools/sim against the pacing table in docs/PRD.md section 4.",
   "config_version": 1,
   "tick_rate_hz": 4,
+  "starting_cash": 0,
   "offline": {
     "base_cap_seconds": 7200,
     "max_cap_seconds": 28800,
