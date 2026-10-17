@@ -1,0 +1,22 @@
+{
+  "_note": "Client-side backend settings (P1). The server key identifies the game; it is not a secret. Never put real secrets in this folder.",
+  "enabled": false,
+  "dev": {
+    "scheme": "http",
+    "host": "10.0.2.2",
+    "port": 7350,
+    "server_key": "CHANGE_ME_server_key"
+  },
+  "prod": {
+    "scheme": "https",
+    "host": "api.example.com",
+    "port": 443,
+    "server_key": "CHANGE_ME_server_key"
+  },
+  "submit_score_interval_seconds": 300,
+  "retry": {
+    "initial_backoff_seconds": 5,
+    "max_backoff_seconds": 600
+  },
+  "request_timeout_seconds": 10
+}

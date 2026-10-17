@@ -1,0 +1,6 @@
+# Copy to "Caddyfile" and replace the domain with yours.
+# Point the domain's DNS A record at your server first; Caddy then gets an HTTPS certificate automatically.
+
+api.example.com {
+	reverse_proxy nakama:7350
+}

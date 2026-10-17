@@ -1,0 +1,12 @@
+# Normalize line endings so both tools and all OSes produce clean diffs
+* text=auto eol=lf
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.webp binary
+*.ogg binary
+*.wav binary
+*.mp3 binary
+*.ttf binary
+*.otf binary

@@ -1,0 +1,19 @@
+{
+  "_note": "Locations (PRD section 6). Only P0 locations are playable in the MVP.",
+  "locations": [
+    {
+      "id": "starter_street",
+      "name": "Starter Street",
+      "release": "P0",
+      "unlock_requires": {},
+      "plots": 4
+    },
+    {
+      "id": "market_lane",
+      "name": "Market Lane",
+      "release": "P0",
+      "unlock_requires": { "businesses_owned": 3, "lifetime_earnings": 50000 },
+      "plots": 4
+    }
+  ]
+}

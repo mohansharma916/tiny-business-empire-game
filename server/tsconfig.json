@@ -1,0 +1,24 @@
+{
+  "files": [
+    "./src/config.ts",
+    "./src/bignum.ts",
+    "./src/validation.ts",
+    "./src/leaderboards.ts",
+    "./src/push.ts",
+    "./src/rpc.ts",
+    "./src/main.ts"
+  ],
+  "compilerOptions": {
+    "typeRoots": ["./node_modules"],
+    "types": ["nakama-runtime"],
+    "rootDir": "./src",
+    "outFile": "./build/index.js",
+    "target": "es5",
+    "lib": ["es5", "es2015.core"],
+    "strict": true,
+    "noImplicitReturns": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "removeComments": false
+  }
+}

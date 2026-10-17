@@ -1,0 +1,35 @@
+{
+  "_note": "Global economy settings. Starting values only: tune them with tools/sim against the pacing table in docs/PRD.md section 4.",
+  "config_version": 1,
+  "tick_rate_hz": 4,
+  "offline": {
+    "base_cap_seconds": 7200,
+    "max_cap_seconds": 28800,
+    "rate": 0.5,
+    "ad_multiplier": 2.0
+  },
+  "milestones": {
+    "every_n_levels": 25,
+    "multiplier": 2.0
+  },
+  "tap": {
+    "boost_multiplier": 1.2,
+    "boost_duration_seconds": 10
+  },
+  "no_soft_lock_max_seconds": 300,
+  "save": {
+    "autosave_seconds": 30,
+    "debounce_seconds": 2,
+    "slots": 2,
+    "save_version": 1
+  },
+  "ui": {
+    "label_updates_per_second": 4,
+    "max_visible_customers_per_business": 8
+  },
+  "earnings_milestones": [1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12],
+  "number_format": {
+    "default": "short",
+    "options": ["short", "indian"]
+  }
+}

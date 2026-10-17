@@ -1,0 +1,21 @@
+{
+  "_note": "MVP synergies (PRD section 6). Never required for progression.",
+  "synergies": [
+    {
+      "id": "street_snack_combo",
+      "name": "Street Snack Combo",
+      "requires": ["chai_stall", "pani_puri_cart"],
+      "min_level_each": 10,
+      "income_multiplier": 1.25,
+      "applies_to": ["chai_stall", "pani_puri_cart"]
+    },
+    {
+      "id": "breakfast_corner",
+      "name": "Breakfast Corner",
+      "requires": ["bakery", "cafe"],
+      "min_level_each": 10,
+      "income_multiplier": 1.5,
+      "applies_to": ["bakery", "cafe"]
+    }
+  ]
+}

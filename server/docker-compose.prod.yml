@@ -1,0 +1,30 @@
+# Production override: puts Nakama behind HTTPS with Caddy (automatic Let's Encrypt certificates).
+# Mobile apps need HTTPS: Android blocks plain HTTP by default and iOS requires it (App Transport Security).
+#
+# Usage on the server:
+#   cp Caddyfile.example Caddyfile   (set your domain)
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Requires Docker Compose v2.24+ (for !override).
+
+services:
+  nakama:
+    ports: !override
+      - "127.0.0.1:7351:7351" # console only via SSH tunnel; the API is reached through Caddy
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - nakama
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

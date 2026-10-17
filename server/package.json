@@ -1,0 +1,17 @@
+{
+  "name": "tiny-business-empire-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Nakama server modules for Tiny Business Empire: leaderboards, score validation, push notifications.",
+  "scripts": {
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "test": "npm run build && node --test test/*.test.js",
+    "dev": "npm run build && docker compose up",
+    "restart": "npm run build && docker compose restart nakama"
+  },
+  "devDependencies": {
+    "nakama-runtime": "github:heroiclabs/nakama-common#v1.48.0",
+    "typescript": "~5.9.0"
+  }
+}

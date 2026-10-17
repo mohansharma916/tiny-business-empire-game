@@ -1,0 +1,31 @@
+# Godot 4 cache and build output
+.godot/
+/android/
+/build/
+/export/
+*.apk
+*.aab
+*.ipa
+
+# Export credentials and keystores (never commit)
+export_credentials.cfg
+*.keystore
+*.jks
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
+*service-account*.json
+
+# Backend (server/)
+server/node_modules/
+server/build/
+server/nakama.yml
+server/Caddyfile

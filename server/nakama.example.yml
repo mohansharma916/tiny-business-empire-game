@@ -1,0 +1,33 @@
+# Nakama configuration. Copy to nakama.yml (never commit nakama.yml) and replace every CHANGE_ME.
+# Generate random values with:  openssl rand -hex 24
+
+name: tbe-node1
+
+logger:
+  level: "INFO"
+
+session:
+  token_expiry_sec: 7200 # 2 hours
+  refresh_token_expiry_sec: 2592000 # 30 days, so players stay signed in
+  encryption_key: "CHANGE_ME_session_encryption_key"
+  refresh_encryption_key: "CHANGE_ME_refresh_encryption_key"
+
+socket:
+  # The game client sends this key. It identifies the game, it is not a secret password.
+  server_key: "CHANGE_ME_server_key"
+
+runtime:
+  js_entrypoint: "build/index.js"
+  http_key: "CHANGE_ME_runtime_http_key"
+  env:
+    # Firebase Cloud Messaging (push notifications). Leave empty to disable pushes.
+    # From Firebase console -> Project settings -> Service accounts -> Generate new private key.
+    - "FCM_PROJECT_ID="
+    - "FCM_CLIENT_EMAIL="
+    # Paste the private key on one line, keeping the \n sequences from the JSON file.
+    - "FCM_PRIVATE_KEY="
+
+console:
+  username: "admin"
+  password: "CHANGE_ME_console_password"
+  signing_key: "CHANGE_ME_console_signing_key"
