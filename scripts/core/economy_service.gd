@@ -16,13 +16,17 @@ signal business_automated(business_id: String)
 signal location_unlocked(location_id: String)
 ## milestone_id is "<business_id>:<track>:<level>", e.g. "chai_stall:quality:25".
 signal milestone_reached(milestone_id: String)
+## Emitted on launch/resume while an offline claim is pending; see get_pending_offline_earnings().
+signal offline_earnings_available(summary: Dictionary)
 
 ## Pass as `amount` to buy_upgrade() / get_upgrade_cost() for the ×Max button.
 const BULK_MAX: int = -1
 const USEC_PER_SECOND: float = 1_000_000.0
 
 var config: GameConfig
-var lifecycle: AppLifecycle = AppLifecycle.new()
+var lifecycle: AppLifecycle = AppLifecycle.new(self)
+## Null on instances created by tests/tools/sim without saves.
+var persistence: EconomyPersistence
 
 var _cash: BigNumber = BigNumber.zero()
 var _lifetime_earnings: BigNumber = BigNumber.zero()
@@ -39,6 +43,9 @@ var _last_tick_usec: int = 0
 
 func _ready() -> void:
 	setup(GameConfig.load_from_dir())
+	persistence = EconomyPersistence.new(self, SaveSystem.from_config(config))
+	persistence.load_game()
+	_announce_pending_offline()
 	_tick_timer = Timer.new()
 	_tick_timer.wait_time = 1.0 / float(config.economy["tick_rate_hz"])
 	_tick_timer.timeout.connect(_on_tick)
@@ -84,6 +91,10 @@ func get_cash() -> BigNumber:
 ## Sum of every business that earns without tapping (automated), boosts included.
 func get_income_per_second() -> BigNumber:
 	return _income_per_second
+
+
+func get_lifetime_earnings() -> BigNumber:
+	return _lifetime_earnings
 
 
 ## Snapshot copy; changing it does nothing. Keys:
@@ -193,6 +204,67 @@ func tap_business(business_id: String) -> bool:
 	return true
 
 
+# --- Saves and offline earnings ----------------------------------------------
+
+## Writes a save now (e.g. when the app is backgrounded). False if it failed.
+func save_now() -> bool:
+	return persistence != null and persistence.save_now()
+
+
+## Adds earnings since the last save to the pending claim (launch and resume).
+func check_offline_earnings() -> void:
+	if persistence:
+		persistence.check_offline_earnings()
+		_announce_pending_offline()
+
+
+## {total, seconds_away, credited_seconds, per_business {id: BigNumber}}; {} if nothing to claim.
+func get_pending_offline_earnings() -> Dictionary:
+	return persistence.get_pending() if persistence else {}
+
+
+## Grants the pending offline earnings once. Returns the amount (zero if none).
+## TODO(P1): rewarded-ad doubling (economy.offline.ad_multiplier).
+func claim_offline_earnings() -> BigNumber:
+	return persistence.claim() if persistence else BigNumber.zero()
+
+
+## Steady-state rates of businesses that earn while the app is closed.
+func get_offline_rates() -> Dictionary:
+	var rates: Dictionary = {}
+	for business_id: String in _businesses:
+		if _businesses[business_id]["owned"] and _businesses[business_id]["has_manager"]:
+			rates[business_id] = _base_income[business_id]
+	return rates
+
+
+## Only EconomyPersistence calls this, when loading a save.
+## businesses: id -> {owned, levels {track: int}, workers, has_manager}.
+func restore_state(cash: BigNumber, lifetime_earnings: BigNumber, businesses: Dictionary) -> void:
+	_cash = cash
+	_lifetime_earnings = lifetime_earnings
+	for business_id: String in businesses:
+		var saved: Dictionary = businesses[business_id]
+		var state: Dictionary = _businesses[business_id]
+		for key: String in ["owned", "workers", "has_manager"]:
+			state[key] = saved[key]
+		for track: String in saved["levels"]:
+			state["levels"][track] = saved["levels"][track]
+	recalculate_income()
+	cash_changed.emit(_cash)
+
+
+## Only EconomyPersistence calls this, after the claim is already saved.
+func grant_claimed(amount: BigNumber) -> void:
+	_earn(amount)
+
+
+func _announce_pending_offline() -> void:
+	var pending: Dictionary = get_pending_offline_earnings()
+	if not pending.is_empty():
+		offline_earnings_available.emit(pending)
+
+
 # --- Rate engine -------------------------------------------------------------
 
 ## Rebuilds the cached rates. Call only when something changed.
@@ -245,6 +317,8 @@ func _on_tick() -> void:
 	# Measured, not assumed: a timer can fire late on a slow frame.
 	advance((now - _last_tick_usec) / USEC_PER_SECOND)
 	_last_tick_usec = now
+	if persistence:
+		persistence.on_tick()
 
 
 # --- Helpers -----------------------------------------------------------------
@@ -295,6 +369,8 @@ func _emit_milestones(business_id: String, track: String, old_level: int, new_le
 func _spend(cost: BigNumber) -> void:
 	_cash = _cash.subtract(cost)
 	cash_changed.emit(_cash)
+	if persistence:
+		persistence.mark_dirty()
 
 
 func _earn(amount: BigNumber) -> void:

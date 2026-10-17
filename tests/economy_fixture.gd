@@ -44,6 +44,32 @@ static func service(test: GutTest) -> Node:
 	return svc
 
 
+## A service with saves in `save_dir` and a controllable clock: set clock.now (unix seconds).
+## Mirrors EconomyService._ready() without the scene tree or timer.
+static func service_with_saves(test: GutTest, save_dir: String, clock: FakeClock,
+		saves: SaveSystem = null) -> Node:
+	var svc: Node = service(test)
+	var save_system: SaveSystem = saves if saves else SaveSystem.from_config(svc.config, save_dir)
+	svc.persistence = EconomyPersistence.new(svc, save_system)
+	svc.persistence.wall_clock = func() -> int: return clock.now
+	svc.persistence.monotonic_clock = func() -> float: return clock.monotonic
+	svc.persistence.load_game()
+	return svc
+
+
+static func remove_dir(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute(path.path_join(file))
+	DirAccess.remove_absolute(path)
+
+
+class FakeClock:
+	var now: int = 1_000_000
+	var monotonic: float = 0.0
+
+
 ## Income 5/s at level 0: min(demand 2, capacity 1) × 10 / 2 s.
 static func _business(unlock_cost: float, requires: Dictionary) -> Dictionary:
 	return {
