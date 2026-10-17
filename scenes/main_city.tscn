@@ -1,0 +1,228 @@
+[gd_scene format=3 uid="uid://c3x78a0y9w4eq"]
+
+[ext_resource type="Script" path="res://scripts/ui/main_city.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/tile_road.png" id="2_road"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/tile_curb.png" id="3_curb"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/tile_sidewalk.png" id="4_sidewalk"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/tile_plot_edge.png" id="5_plot"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/chai_stall_level1.png" id="6_stall"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/ring_bg.png" id="7_ring_bg"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/ring.png" id="8_ring_fg"]
+[ext_resource type="PackedScene" path="res://scenes/business_details_panel.tscn" id="9_details"]
+[ext_resource type="PackedScene" path="res://scenes/offline_earnings_screen.tscn" id="10_offline"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
+bg_color = Color(0.1, 0.1, 0.14, 0.92)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_gold"]
+bg_color = Color(0.9, 0.62, 0.1, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hitbox"]
+bg_color = Color(1, 1, 1, 0)
+
+[node name="MainCity" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="BackgroundSky" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.18, 0.16, 0.22, 1)
+
+[node name="CityWorld" type="Node2D" parent="."]
+
+[node name="StreetTiles" type="Node2D" parent="CityWorld"]
+
+[node name="RoadTile1" type="Sprite2D" parent="CityWorld/StreetTiles"]
+position = Vector2(160, 920)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_road")
+
+[node name="RoadTile2" type="Sprite2D" parent="CityWorld/StreetTiles"]
+position = Vector2(400, 1020)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_road")
+
+[node name="CurbTile1" type="Sprite2D" parent="CityWorld/StreetTiles"]
+position = Vector2(180, 800)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_curb")
+
+[node name="CurbTile2" type="Sprite2D" parent="CityWorld/StreetTiles"]
+position = Vector2(420, 900)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_curb")
+
+[node name="SidewalkTile1" type="Sprite2D" parent="CityWorld/StreetTiles"]
+position = Vector2(220, 680)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("4_sidewalk")
+
+[node name="SidewalkTile2" type="Sprite2D" parent="CityWorld/StreetTiles"]
+position = Vector2(460, 780)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("4_sidewalk")
+
+[node name="EmptyPlot" type="Sprite2D" parent="CityWorld/StreetTiles"]
+position = Vector2(580, 640)
+scale = Vector2(0.55, 0.55)
+texture = ExtResource("5_plot")
+
+[node name="Customers" type="Node2D" parent="CityWorld"]
+
+[node name="StallPlot" type="Node2D" parent="CityWorld"]
+position = Vector2(360, 520)
+
+[node name="PlotBase" type="Sprite2D" parent="CityWorld/StallPlot"]
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("5_plot")
+
+[node name="StallSprite" type="Sprite2D" parent="CityWorld/StallPlot"]
+position = Vector2(0, -60)
+scale = Vector2(0.38, 0.38)
+texture = ExtResource("6_stall")
+
+[node name="TapRing" type="TextureProgressBar" parent="CityWorld/StallPlot"]
+modulate = Color(0.2, 0.85, 1, 0.9)
+offset_left = -64.0
+offset_top = -180.0
+offset_right = 64.0
+offset_bottom = -52.0
+fill_mode = 4
+texture_under = ExtResource("7_ring_bg")
+texture_progress = ExtResource("8_ring_fg")
+
+[node name="HoldPrompt" type="Label" parent="CityWorld/StallPlot"]
+offset_left = -80.0
+offset_top = -208.0
+offset_right = 80.0
+offset_bottom = -185.0
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "HOLD TO SERVE"
+horizontal_alignment = 1
+
+[node name="TapHitbox" type="Button" parent="CityWorld/StallPlot"]
+offset_left = -110.0
+offset_top = -180.0
+offset_right = 110.0
+offset_bottom = 60.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_hitbox")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hitbox")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hitbox")
+theme_override_styles/focus = SubResource("StyleBoxFlat_hitbox")
+
+[node name="CashFloatAnchor" type="Marker2D" parent="CityWorld/StallPlot"]
+position = Vector2(0, -120)
+
+[node name="SafeContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 24
+
+[node name="TopHUD" type="Control" parent="SafeContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+
+[node name="HBox" type="HBoxContainer" parent="SafeContainer/TopHUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 54.0
+grow_horizontal = 2
+theme_override_constants/separation = 12
+
+[node name="CashCard" type="PanelContainer" parent="SafeContainer/TopHUD/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="CashLabel" type="Label" parent="SafeContainer/TopHUD/HBox/CashCard"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.95, 0.45, 1)
+theme_override_font_sizes/font_size = 20
+text = "₹ 50"
+
+[node name="IncomeCard" type="PanelContainer" parent="SafeContainer/TopHUD/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="IncomeLabel" type="Label" parent="SafeContainer/TopHUD/HBox/IncomeCard"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.25, 1)
+theme_override_font_sizes/font_size = 17
+text = "+₹ 0 / s"
+
+[node name="OfflineTestButton" type="Button" parent="SafeContainer/TopHUD/HBox"]
+custom_minimum_size = Vector2(110, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💤 Offline"
+
+[node name="BottomHUD" type="Control" parent="SafeContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+mouse_filter = 2
+
+[node name="DetailsButton" type="Button" parent="SafeContainer/BottomHUD"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -54.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.1, 0.1, 0.1, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_gold")
+text = "⚙️ UPGRADE CHAI STALL"
+
+[node name="Panels" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BusinessDetailsPanel" parent="Panels" instance=ExtResource("9_details")]
+visible = false
+layout_mode = 1
+
+[node name="OfflineEarningsScreen" parent="Panels" instance=ExtResource("10_offline")]
+visible = false
+layout_mode = 1
