@@ -30,9 +30,19 @@ static func config() -> GameConfig:
 			"manager": {"automates": true},
 		},
 	}
+	c.locations = [
+		{"id": "street", "unlock_requires": {}},
+		{"id": "lane", "unlock_requires": {"businesses_owned": 2, "lifetime_earnings": 5000}},
+	]
+	c.synergies = [
+		{"id": "combo", "requires": ["chai_stall", "cart"], "min_level_each": 3,
+			"income_multiplier": 1.5, "applies_to": ["chai_stall", "cart"]},
+	]
 	c.businesses = {
-		"chai_stall": _business(0, {}),
-		"cart": _business(1000, {"owned": ["chai_stall"]}),
+		"chai_stall": _business(0, {}, "street"),
+		"cart": _business(1000, {"owned": ["chai_stall"]}, "street"),
+		"bakery": _business(2000, {"location": "lane"}, "lane"),
+		"cafe": _business(3000, {"owned": ["bakery"]}, "lane"),
 	}
 	return c
 
@@ -71,8 +81,9 @@ class FakeClock:
 
 
 ## Income 5/s at level 0: min(demand 2, capacity 1) × 10 / 2 s.
-static func _business(unlock_cost: float, requires: Dictionary) -> Dictionary:
+static func _business(unlock_cost: float, requires: Dictionary, location: String) -> Dictionary:
 	return {
+		"location": location,
 		"unlock_cost": unlock_cost,
 		"unlock_requires": requires,
 		"base_revenue_per_customer": 10,

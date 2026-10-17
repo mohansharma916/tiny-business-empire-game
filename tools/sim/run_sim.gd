@@ -20,7 +20,7 @@ func _initialize() -> void:
 		print("\nPurchases:")
 		for purchase: Dictionary in sim.purchases:
 			print("  %s  %s" % [_clock(purchase["time"]), purchase["label"]])
-	print("\n(simulated %s in %d ms)" % [_clock(float(settings["duration_seconds"])), Time.get_ticks_msec() - started])
+	print("\n(simulated %s in %d ms)" % [_clock(sim.time), Time.get_ticks_msec() - started])
 	quit(0 if passed else 1)
 
 
@@ -49,6 +49,11 @@ func _report(sim: PacingSim, config: GameConfig, settings: Dictionary) -> bool:
 			result = "MISS" if target["economy_driven"] else "(informational)"
 			passed = passed and not target["economy_driven"]
 		print("%-34s %8s %8s  %s" % [target["label"], _clock(goal), reached, result])
+	print("\nFull progression (no PRD targets):")
+	for row: Dictionary in settings.get("timeline", []):
+		var reached: String = _clock(sim.milestones[row["id"]]) if sim.milestones.has(row["id"]) else "never"
+		print("%-34s %8s %8s" % [row["label"], "", reached])
+	print("%-34s %8s %8s" % ["Run ended", "", _clock(sim.time)])
 	var limit: float = float(config.economy[settings["soft_lock_max_seconds_key"]])
 	var soft_lock_ok: bool = sim.worst_wait <= limit
 	passed = passed and soft_lock_ok

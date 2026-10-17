@@ -157,3 +157,12 @@ class FailingSaveSystem:
 
 	func save(payload: Dictionary) -> bool:
 		return false if fail else super.save(payload)
+
+
+func test_unlocked_locations_survive_a_relaunch() -> void:
+	var svc: Node = EconomyFixture.service_with_saves(self, DIR, clock)
+	svc._cash = BigNumber.from_float(1000.0)
+	svc.buy_business("cart")
+	svc._earn(BigNumber.from_float(6000.0))
+	svc.save_now()
+	assert_true(_relaunch_after(0).is_location_unlocked("lane"))

@@ -1,6 +1,7 @@
 {
   "_note": "Simulator settings, not game tuning (game numbers live in config/). Targets come from docs/PRD.md section 4.",
-  "duration_seconds": 3600,
+  "_duration_note": "Runs until every business is owned and every synergy active, or this many seconds.",
+  "duration_seconds": 14400,
   "decision_interval_seconds": 1.0,
   "player": {
     "_note": "An average player keeps one finger on the best manual business, but only for active_fraction of every attention_period_seconds (the rest is reading, browsing panels, looking away). They react to a finished cycle after retap_delay_seconds and never tap automated businesses for the boost.",
@@ -17,5 +18,15 @@
     { "id": "first_manager", "label": "Chai stall automated (manager)", "seconds": 480, "economy_driven": true },
     { "id": "business_2", "label": "Second business", "seconds": 720, "economy_driven": true },
     { "id": "business_3", "label": "Third business", "seconds": 1200, "economy_driven": true }
+  ],
+  "_timeline_note": "Reported after the targets with no pass/fail: the PRD sets no times for these.",
+  "timeline": [
+    { "id": "business:pani_puri_cart", "label": "Pani puri cart bought" },
+    { "id": "business:fruit_stand", "label": "Fruit stand bought" },
+    { "id": "synergy:street_snack_combo", "label": "Street Snack Combo active" },
+    { "id": "location:market_lane", "label": "Market Lane unlocked" },
+    { "id": "business:bakery", "label": "Bakery bought" },
+    { "id": "business:cafe", "label": "Café bought" },
+    { "id": "synergy:breakfast_corner", "label": "Breakfast Corner active" }
   ]
 }

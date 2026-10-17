@@ -152,3 +152,9 @@ func test_scheduler_autosaves_every_30_seconds() -> void:
 	var scheduler := SaveScheduler.new(2.0, 30.0, 0.0)
 	assert_false(scheduler.is_due(29.9))
 	assert_true(scheduler.is_due(30.0))
+
+
+func test_shipped_v1_to_v2_migration_adds_locations() -> void:
+	saves.save({"cash": {"m": 1.0, "e": 0}})
+	var loaded := SaveSystem.new(DIR, 2, 2).load()
+	assert_eq(loaded["unlocked_locations"], [])

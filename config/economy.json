@@ -22,7 +22,7 @@
     "autosave_seconds": 30,
     "debounce_seconds": 2,
     "slots": 2,
-    "save_version": 1
+    "save_version": 2
   },
   "ui": {
     "label_updates_per_second": 4,

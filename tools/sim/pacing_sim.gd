@@ -42,6 +42,8 @@ func _init(game_config: GameConfig, sim_settings: Dictionary) -> void:
 	_attention_period = float(settings["player"]["attention_period_seconds"])
 	economy = ECONOMY_SERVICE.new()
 	economy.setup(config)
+	economy.location_unlocked.connect(func(id: String) -> void: _mark("location:" + id, true))
+	economy.synergy_activated.connect(func(id: String) -> void: _mark("synergy:" + id, true))
 	for business_id: String in config.businesses:
 		if economy.get_business_state(business_id)["owned"]:
 			_businesses_owned += 1
@@ -52,7 +54,7 @@ func run() -> PacingSim:
 	var duration: float = float(settings["duration_seconds"])
 	var decision_every: int = maxi(int(float(settings["decision_interval_seconds"]) / tick), 1)
 	var step: int = 0
-	while time < duration:
+	while time < duration and not _everything_unlocked():
 		_serve()
 		economy.advance(tick)
 		time += tick
@@ -123,9 +125,16 @@ func _execute(option: Dictionary) -> bool:
 			if ok:
 				_businesses_owned += 1
 				_mark("business_%d" % _businesses_owned, true)
+				_mark("business:" + id, true)
 	if ok:
 		purchases.append({"time": time, "label": "%s %s %s" % [option["kind"], id, option.get("track", "")]})
 	return ok
+
+
+## Stop once every business is owned and every synergy is active.
+func _everything_unlocked() -> bool:
+	return _businesses_owned == config.businesses.size() \
+		and economy.get_active_synergies().size() == config.synergies.size()
 
 
 func _mark(milestone: String, happened: bool) -> void:
@@ -196,26 +205,28 @@ func _apply(states: Dictionary, option: Dictionary) -> Dictionary:
 
 
 func _passive_income(states: Dictionary) -> float:
+	var active: Array[String] = ProgressionRules.active_synergies(config, states)
 	var total: float = 0.0
 	for id: String in states:
 		if states[id]["owned"] and states[id]["has_manager"]:
-			total += _rate(id, states[id])
+			total += _rate(id, states[id], active)
 	return total
 
 
 ## Passive income plus the one manual business under the player's finger.
 func _effective_income(states: Dictionary) -> float:
-	var finger: String = _finger_business(states)
-	var manual: float = _manual_rate(finger, states[finger]) if not finger.is_empty() else 0.0
+	var active: Array[String] = ProgressionRules.active_synergies(config, states)
+	var finger: String = _finger_business(states, active)
+	var manual: float = _manual_rate(finger, states[finger], active) if not finger.is_empty() else 0.0
 	return _passive_income(states) + manual
 
 
-func _finger_business(states: Dictionary) -> String:
+func _finger_business(states: Dictionary, active: Array[String] = []) -> String:
 	var best: String = ""
 	var best_rate: float = 0.0
 	for id: String in states:
 		if states[id]["owned"] and not states[id]["has_manager"]:
-			var rate: float = _manual_rate(id, states[id])
+			var rate: float = _manual_rate(id, states[id], active)
 			if rate > best_rate:
 				best_rate = rate
 				best = id
@@ -223,10 +234,12 @@ func _finger_business(states: Dictionary) -> String:
 
 
 ## A manual business only earns while tapped: rate × attention × cycle / (cycle + reaction).
-func _manual_rate(id: String, state: Dictionary) -> float:
+func _manual_rate(id: String, state: Dictionary, active: Array[String]) -> float:
 	var cycle: float = IncomeModel.cycle_seconds(config, config.get_business(id), state)
-	return _rate(id, state) * _active_fraction * cycle / (cycle + _retap_delay)
+	return _rate(id, state, active) * _active_fraction * cycle / (cycle + _retap_delay)
 
 
-func _rate(id: String, state: Dictionary) -> float:
-	return IncomeModel.income_per_second(config, config.get_business(id), state).to_float()
+## The same rate EconomyService caches: IncomeModel × active synergies.
+func _rate(id: String, state: Dictionary, active: Array[String]) -> float:
+	return IncomeModel.income_per_second(config, config.get_business(id), state).to_float() \
+		* ProgressionRules.synergy_multiplier(config, id, active)

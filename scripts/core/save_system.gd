@@ -17,7 +17,13 @@ const SET_ASIDE_SUFFIX: String = ".unreadable"
 
 ## MIGRATIONS[i] upgrades a payload from version i + 1 to i + 2.
 ## Append only; never edit a shipped step.
-static var MIGRATIONS: Array[Callable] = []
+static var MIGRATIONS: Array[Callable] = [
+	# v1 → v2: unlocked locations are saved. Market Lane is re-derived on
+	# load from lifetime earnings and businesses owned, so an empty list is safe.
+	func(payload: Dictionary) -> Dictionary:
+		payload["unlocked_locations"] = []
+		return payload,
+]
 
 var dir: String
 var slot_count: int

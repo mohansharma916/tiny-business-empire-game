@@ -102,8 +102,9 @@ func claim() -> BigNumber:
 	return amount
 
 
-## Save payload v1: config_version, cash, lifetime_earnings, businesses
-## {id: {owned, levels, workers, has_manager}}, last_seen_unix, pending_offline.
+## Save payload v2: config_version, cash, lifetime_earnings, businesses
+## {id: {owned, levels, workers, has_manager}}, unlocked_locations, last_seen_unix,
+## pending_offline. (v1 had no unlocked_locations; see SaveSystem.MIGRATIONS.)
 ## Cycle progress and tap boosts are moment-to-moment and not saved.
 func _snapshot() -> Dictionary:
 	var businesses: Dictionary = {}
@@ -118,6 +119,7 @@ func _snapshot() -> Dictionary:
 		"cash": _economy.get_cash().to_dict(),
 		"lifetime_earnings": _economy.get_lifetime_earnings().to_dict(),
 		"businesses": businesses,
+		"unlocked_locations": _economy.get_unlocked_locations(),
 	}
 
 
@@ -139,7 +141,8 @@ func _restore(data: Dictionary) -> void:
 			"workers": int(saved.get("workers", 0)), "has_manager": bool(saved.get("has_manager", false)),
 		}
 	_economy.restore_state(BigNumber.from_dict(data.get("cash", {})),
-		BigNumber.from_dict(data.get("lifetime_earnings", {})), businesses)
+		BigNumber.from_dict(data.get("lifetime_earnings", {})), businesses,
+		data.get("unlocked_locations", []))
 
 
 func _write(data: Dictionary) -> bool:

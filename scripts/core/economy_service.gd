@@ -16,6 +16,8 @@ signal business_automated(business_id: String)
 signal location_unlocked(location_id: String)
 ## milestone_id is "<business_id>:<track>:<level>", e.g. "chai_stall:quality:25".
 signal milestone_reached(milestone_id: String)
+## A synergy's conditions became true (it stays active; levels never go down).
+signal synergy_activated(synergy_id: String)
 ## Emitted on launch/resume while an offline claim is pending; see get_pending_offline_earnings().
 signal offline_earnings_available(summary: Dictionary)
 
@@ -34,8 +36,9 @@ var _income_per_second: BigNumber = BigNumber.zero()
 ## business id -> {owned, levels {track: int}, workers, has_manager,
 ## cycle_running, cycle_elapsed, boost_seconds_left}
 var _businesses: Dictionary = {}
-## business id -> BigNumber, steady-state rate without boosts.
+## business id -> BigNumber, steady-state rate (synergies included) without boosts.
 var _base_income: Dictionary = {}
+var _progression: ProgressionState
 
 var _tick_timer: Timer
 var _last_tick_usec: int = 0
@@ -64,9 +67,10 @@ func setup(game_config: GameConfig) -> void:
 	_cash = BigNumber.from_float(float(config.economy["starting_cash"]))
 	_lifetime_earnings = BigNumber.zero()
 	_businesses.clear()
+	_progression = ProgressionState.new(config)
 	for business_id: String in config.businesses:
-		var business: Dictionary = config.businesses[business_id]
-		var starts_owned: bool = float(business["unlock_cost"]) == 0.0 and business["unlock_requires"].is_empty()
+		var starts_owned: bool = float(config.businesses[business_id]["unlock_cost"]) == 0.0 \
+			and _progression.business_requirements_met(business_id, {})
 		_businesses[business_id] = _new_business_state(starts_owned)
 	recalculate_income()
 
@@ -113,7 +117,31 @@ func get_business_state(business_id: String) -> Dictionary:
 	snapshot["cycle_seconds"] = cycle
 	snapshot["cycle_progress"] = clampf(state["cycle_elapsed"] / cycle, 0.0, 1.0) if state["cycle_running"] else 0.0
 	snapshot["income_per_second"] = _boosted_income(business_id)
+	snapshot["level"] = ProgressionRules.business_level(state)
 	return snapshot
+
+
+## Sum of the business's track levels (synergy conditions use this).
+func get_business_level(business_id: String) -> int:
+	return ProgressionRules.business_level(_businesses[business_id]) if _businesses.has(business_id) else 0
+
+
+func get_active_synergies() -> Array[String]:
+	return _progression.get_active_synergies()
+
+
+func is_location_unlocked(location_id: String) -> bool:
+	return _progression.is_location_unlocked(location_id)
+
+
+func get_unlocked_locations() -> Array:
+	return _progression.get_unlocked_locations()
+
+
+## For locked-plot hints and the Empire Overview: {unlocked, requirements:
+## {businesses_owned: {current, required}, lifetime_earnings: {current, required (BigNumber)}}}.
+func get_location_progress(location_id: String) -> Dictionary:
+	return _progression.location_progress(location_id, _owned_count(), _lifetime_earnings)
 
 
 func can_afford(cost: BigNumber) -> bool:
@@ -131,6 +159,7 @@ func buy_business(business_id: String) -> bool:
 	_businesses[business_id]["owned"] = true
 	recalculate_income()
 	business_purchased.emit(business_id)
+	_check_location_unlocks()
 	return true
 
 
@@ -257,6 +286,11 @@ func claim_offline_earnings() -> BigNumber:
 	return persistence.claim() if persistence else BigNumber.zero()
 
 
+## Grants a cash reward (e.g. from completing objectives or achievements).
+func grant_reward(amount: BigNumber) -> void:
+	_earn(amount)
+
+
 ## Steady-state rates of businesses that earn while the app is closed.
 func get_offline_rates() -> Dictionary:
 	var rates: Dictionary = {}
@@ -268,9 +302,11 @@ func get_offline_rates() -> Dictionary:
 
 ## Only EconomyPersistence calls this, when loading a save.
 ## businesses: id -> {owned, levels {track: int}, workers, has_manager}.
-func restore_state(cash: BigNumber, lifetime_earnings: BigNumber, businesses: Dictionary) -> void:
+func restore_state(cash: BigNumber, lifetime_earnings: BigNumber, businesses: Dictionary,
+		unlocked_locations: Array) -> void:
 	_cash = cash
 	_lifetime_earnings = lifetime_earnings
+	_progression.restore_locations(unlocked_locations)
 	for business_id: String in businesses:
 		var saved: Dictionary = businesses[business_id]
 		var state: Dictionary = _businesses[business_id]
@@ -278,7 +314,10 @@ func restore_state(cash: BigNumber, lifetime_earnings: BigNumber, businesses: Di
 			state[key] = saved[key]
 		for track: String in saved["levels"]:
 			state["levels"][track] = saved["levels"][track]
+	# Synergies earned before this save aren't news; don't re-announce them.
+	_progression.refresh_synergies(_businesses, false)
 	recalculate_income()
+	_check_location_unlocks()
 	cash_changed.emit(_cash)
 
 
@@ -297,18 +336,22 @@ func _announce_pending_offline() -> void:
 
 ## Rebuilds the cached rates. Call only when something changed.
 func recalculate_income() -> void:
+	var newly_active: Array[String] = _progression.refresh_synergies(_businesses)
 	var total: BigNumber = BigNumber.zero()
 	for business_id: String in _businesses:
 		var state: Dictionary = _businesses[business_id]
 		if not state["owned"]:
 			_base_income[business_id] = BigNumber.zero()
 			continue
-		_base_income[business_id] = IncomeModel.income_per_second(config, config.get_business(business_id), state)
+		_base_income[business_id] = IncomeModel.income_per_second(config, config.get_business(business_id), state) \
+			.multiply_scalar(_progression.synergy_multiplier(business_id))
 		if state["has_manager"]:
 			total = total.add(_boosted_income(business_id))
 	if not total.is_equal(_income_per_second):
 		_income_per_second = total
 		income_changed.emit(_income_per_second)
+	for synergy_id: String in newly_active:
+		synergy_activated.emit(synergy_id)
 
 
 ## Integrates `seconds` of play. The tick calls this; offline earnings use
@@ -362,12 +405,23 @@ func _new_business_state(owned: bool) -> Dictionary:
 
 
 func _requirements_met(business_id: String) -> bool:
-	var requires: Dictionary = config.get_business(business_id).get("unlock_requires", {})
-	for owned_id: String in requires.get("owned", []):
-		if not _is_owned(owned_id):
-			return false
-	# TODO(core/content): "location" requirements once Market Lane can be unlocked.
-	return not requires.has("location")
+	return _progression.business_requirements_met(business_id, _businesses)
+
+
+## Locations unlock by themselves once their conditions hold (no cost in config).
+func _check_location_unlocks() -> void:
+	for location_id: String in _progression.unlock_due_locations(_owned_count(), _lifetime_earnings):
+		location_unlocked.emit(location_id)
+		if persistence:
+			persistence.mark_dirty()
+
+
+func _owned_count() -> int:
+	var count: int = 0
+	for state: Dictionary in _businesses.values():
+		if state["owned"]:
+			count += 1
+	return count
 
 
 func _is_owned(business_id: String) -> bool:
@@ -414,3 +468,4 @@ func _earn(amount: BigNumber) -> void:
 	_cash = _cash.add(amount)
 	_lifetime_earnings = _lifetime_earnings.add(amount)
 	cash_changed.emit(_cash)
+	_check_location_unlocks()

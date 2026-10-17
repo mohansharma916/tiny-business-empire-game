@@ -29,6 +29,5 @@ no-soft-lock rule broke. Run it after every change to `config/`.
   (passive income once something is automated, tapping income before that) must
   stay under `config/economy.json` → `no_soft_lock_max_seconds`.
 
-## Limits
-
-- Market Lane can't be unlocked yet (core/content), so bakery and café are not simulated.
+- Full progression through the café (Market Lane, both synergies) as an untargeted
+  timeline; the run stops once every business is owned and every synergy is active.
