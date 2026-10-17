@@ -84,6 +84,7 @@ func _ready() -> void:
 	_setup_location_buttons()
 	_setup_plot_interactions()
 	_apply_safe_area()
+	_scale_backgrounds_to_viewport()
 
 	EconomyService.cash_changed.connect(func(_c): _request_hud_refresh())
 	EconomyService.income_changed.connect(func(_i): _request_hud_refresh())
@@ -132,6 +133,20 @@ func _apply_safe_area() -> void:
 		var safe_margin: MarginContainer = $SafeContainer
 		safe_margin.add_theme_constant_override("margin_top", int(margin_top))
 		safe_margin.add_theme_constant_override("margin_bottom", int(margin_bottom))
+
+func _scale_backgrounds_to_viewport() -> void:
+	var vp_size := get_viewport_rect().size
+	if vp_size.x <= 0 or vp_size.y <= 0:
+		return
+	var s: float = maxf(vp_size.x / 768.0, vp_size.y / 1376.0)
+	var bg_starter := starter_street.get_node_or_null("Background") as Sprite2D
+	var bg_market := market_lane.get_node_or_null("Background") as Sprite2D
+	if bg_starter:
+		bg_starter.scale = Vector2(s, s)
+		bg_starter.position = vp_size / 2.0
+	if bg_market:
+		bg_market.scale = Vector2(s, s)
+		bg_market.position = vp_size / 2.0
 
 func _setup_panel_events() -> void:
 	details_btn.pressed.connect(open_selected_business_details)
@@ -404,15 +419,15 @@ func _spawn_customer_purchase_effect() -> void:
 
 func _launch_customer(cust: Node2D) -> void:
 	cust.visible = true
-	var start_pos := Vector2(80, 720)
-	var stall_pos := Vector2(280, 580)
-	var end_pos := Vector2(580, 760)
+	var start_pos := Vector2(80, 1150) if current_location == "starter_street" else Vector2(180, 1100)
+	var stall_pos := Vector2(250, 800) if current_location == "starter_street" else Vector2(480, 780)
+	var end_pos := Vector2(580, 520) if current_location == "starter_street" else Vector2(650, 480)
 
 	cust.position = start_pos
 	var tween := create_tween()
-	tween.tween_property(cust, "position", stall_pos, 1.2)
+	tween.tween_property(cust, "position", stall_pos, 1.4)
 	tween.tween_interval(0.4)
-	tween.tween_property(cust, "position", end_pos, 1.2)
+	tween.tween_property(cust, "position", end_pos, 1.4)
 	tween.tween_callback(func(): cust.visible = false)
 
 func _process_customer_movement(delta: float) -> void:

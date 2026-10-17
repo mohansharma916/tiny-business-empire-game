@@ -44,7 +44,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 215
+theme_override_constants/margin_top = 260
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 30
 

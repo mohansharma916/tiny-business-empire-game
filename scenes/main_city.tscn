@@ -1,28 +1,31 @@
 [gd_scene format=3 uid="uid://c3x78a0y9w4eq"]
 
 [ext_resource type="Script" path="res://scripts/ui/main_city.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/placeholder/tile_road.png" id="2_road"]
-[ext_resource type="Texture2D" path="res://assets/placeholder/tile_curb.png" id="3_curb"]
-[ext_resource type="Texture2D" path="res://assets/placeholder/tile_sidewalk.png" id="4_sidewalk"]
-[ext_resource type="Texture2D" path="res://assets/placeholder/tile_plot_edge.png" id="5_plot"]
-[ext_resource type="Texture2D" path="res://assets/placeholder/chai_stall_level1.png" id="6_stall"]
-[ext_resource type="Texture2D" path="res://assets/placeholder/pani_puri_cart_level1.png" id="7_pani_puri"]
-[ext_resource type="Texture2D" path="res://assets/placeholder/fruit_stand_level1.png" id="8_fruit"]
-[ext_resource type="Texture2D" path="res://assets/placeholder/bakery_level1.png" id="9_bakery"]
-[ext_resource type="Texture2D" path="res://assets/placeholder/cafe_level1.png" id="10_cafe"]
-[ext_resource type="Texture2D" path="res://assets/placeholder/ring_bg.png" id="11_ring_bg"]
-[ext_resource type="Texture2D" path="res://assets/placeholder/ring.png" id="12_ring_fg"]
-[ext_resource type="PackedScene" path="res://scenes/business_details_panel.tscn" id="13_details"]
-[ext_resource type="PackedScene" path="res://scenes/offline_earnings_screen.tscn" id="14_offline"]
-[ext_resource type="PackedScene" path="res://scenes/objectives_screen.tscn" id="15_objectives"]
-[ext_resource type="PackedScene" path="res://scenes/empire_overview_screen.tscn" id="16_empire"]
-[ext_resource type="PackedScene" path="res://scenes/business_unlock_screen.tscn" id="17_unlock"]
-[ext_resource type="PackedScene" path="res://scenes/settings_screen.tscn" id="18_settings"]
-[ext_resource type="PackedScene" path="res://scenes/locked_hint_modal.tscn" id="19_locked_hint"]
-[ext_resource type="PackedScene" path="res://scenes/tutorial_overlay.tscn" id="20_tutorial"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/starter_street_bg.png" id="2_starter_bg"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/market_lane_bg.png" id="3_market_bg"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/chai_stall_level1.png" id="4_stall"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/pani_puri_cart_level1.png" id="5_pani_puri"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/fruit_stand_level1.png" id="6_fruit"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/bakery_level1.png" id="7_bakery"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/cafe_level1.png" id="8_cafe"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/ring_bg.png" id="9_ring_bg"]
+[ext_resource type="Texture2D" path="res://assets/placeholder/ring.png" id="10_ring_fg"]
+[ext_resource type="PackedScene" path="res://scenes/business_details_panel.tscn" id="11_details"]
+[ext_resource type="PackedScene" path="res://scenes/offline_earnings_screen.tscn" id="12_offline"]
+[ext_resource type="PackedScene" path="res://scenes/objectives_screen.tscn" id="13_objectives"]
+[ext_resource type="PackedScene" path="res://scenes/empire_overview_screen.tscn" id="14_empire"]
+[ext_resource type="PackedScene" path="res://scenes/business_unlock_screen.tscn" id="15_unlock"]
+[ext_resource type="PackedScene" path="res://scenes/settings_screen.tscn" id="16_settings"]
+[ext_resource type="PackedScene" path="res://scenes/locked_hint_modal.tscn" id="17_locked_hint"]
+[ext_resource type="PackedScene" path="res://scenes/tutorial_overlay.tscn" id="18_tutorial"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
-bg_color = Color(0.1, 0.1, 0.14, 0.92)
+bg_color = Color(0.08, 0.08, 0.12, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.28, 0.38, 0.7)
 corner_radius_top_left = 14
 corner_radius_top_right = 14
 corner_radius_bottom_right = 14
@@ -33,27 +36,33 @@ content_margin_right = 16.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_gold"]
-bg_color = Color(0.9, 0.62, 0.1, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
+bg_color = Color(0.95, 0.68, 0.15, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 4
+shadow_offset = Vector2(0, 3)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_locked_card"]
-bg_color = Color(0.12, 0.12, 0.16, 0.88)
+bg_color = Color(0.1, 0.1, 0.15, 0.92)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.7, 0.5, 0.2, 0.9)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 8.0
+border_color = Color(0.95, 0.72, 0.2, 0.9)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+content_margin_left = 14.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 6
+shadow_offset = Vector2(0, 3)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hitbox"]
 bg_color = Color(1, 1, 1, 0)
@@ -67,89 +76,49 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="BackgroundSky" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.16, 0.15, 0.2, 1)
-
 [node name="CityWorld" type="Node2D" parent="."]
 
 [node name="StarterStreet" type="Node2D" parent="CityWorld"]
 
-[node name="StreetTiles" type="Node2D" parent="CityWorld/StarterStreet"]
-
-[node name="RoadTile1" type="Sprite2D" parent="CityWorld/StarterStreet/StreetTiles"]
-position = Vector2(160, 920)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_road")
-
-[node name="RoadTile2" type="Sprite2D" parent="CityWorld/StarterStreet/StreetTiles"]
-position = Vector2(400, 1020)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_road")
-
-[node name="CurbTile1" type="Sprite2D" parent="CityWorld/StarterStreet/StreetTiles"]
-position = Vector2(180, 800)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("3_curb")
-
-[node name="CurbTile2" type="Sprite2D" parent="CityWorld/StarterStreet/StreetTiles"]
-position = Vector2(420, 900)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("3_curb")
-
-[node name="SidewalkTile1" type="Sprite2D" parent="CityWorld/StarterStreet/StreetTiles"]
-position = Vector2(220, 680)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("4_sidewalk")
-
-[node name="SidewalkTile2" type="Sprite2D" parent="CityWorld/StarterStreet/StreetTiles"]
-position = Vector2(460, 780)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("4_sidewalk")
+[node name="Background" type="Sprite2D" parent="CityWorld/StarterStreet"]
+position = Vector2(360, 640)
+scale = Vector2(0.9375, 0.9302)
+texture = ExtResource("2_starter_bg")
 
 [node name="Plot_chai_stall" type="Node2D" parent="CityWorld/StarterStreet"]
-position = Vector2(220, 520)
-
-[node name="PlotBase" type="Sprite2D" parent="CityWorld/StarterStreet/Plot_chai_stall"]
-scale = Vector2(0.55, 0.55)
-texture = ExtResource("5_plot")
+position = Vector2(250, 680)
 
 [node name="BusinessSprite" type="Sprite2D" parent="CityWorld/StarterStreet/Plot_chai_stall"]
 position = Vector2(0, -50)
-scale = Vector2(0.32, 0.32)
-texture = ExtResource("6_stall")
+scale = Vector2(0.24, 0.24)
+texture = ExtResource("4_stall")
 
 [node name="TapRing" type="TextureProgressBar" parent="CityWorld/StarterStreet/Plot_chai_stall"]
-modulate = Color(0.2, 0.85, 1, 0.9)
-offset_left = -56.0
-offset_top = -150.0
-offset_right = 72.0
-offset_bottom = -22.0
-scale = Vector2(0.85, 0.85)
+modulate = Color(0.2, 0.9, 1, 0.95)
+offset_left = -50.0
+offset_top = -140.0
+offset_right = 78.0
+offset_bottom = -12.0
+scale = Vector2(0.78, 0.78)
 fill_mode = 4
-texture_under = ExtResource("11_ring_bg")
-texture_progress = ExtResource("12_ring_fg")
+texture_under = ExtResource("9_ring_bg")
+texture_progress = ExtResource("10_ring_fg")
 
 [node name="HoldPrompt" type="Label" parent="CityWorld/StarterStreet/Plot_chai_stall"]
 offset_left = -75.0
-offset_top = -174.0
+offset_top = -165.0
 offset_right = 75.0
-offset_bottom = -154.0
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+offset_bottom = -145.0
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "HOLD TO SERVE"
 horizontal_alignment = 1
 
 [node name="LockedCard" type="PanelContainer" parent="CityWorld/StarterStreet/Plot_chai_stall"]
 visible = false
-offset_left = -75.0
+offset_left = -80.0
 offset_top = -70.0
-offset_right = 75.0
+offset_right = 80.0
 offset_bottom = 20.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_locked_card")
 
@@ -158,16 +127,16 @@ layout_mode = 2
 
 [node name="TitleLabel" type="Label" parent="CityWorld/StarterStreet/Plot_chai_stall/LockedCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "🔒 Chai Stall"
 horizontal_alignment = 1
 
 [node name="TapHitbox" type="Button" parent="CityWorld/StarterStreet/Plot_chai_stall"]
-offset_left = -85.0
+offset_left = -90.0
 offset_top = -160.0
-offset_right = 85.0
-offset_bottom = 50.0
+offset_right = 90.0
+offset_bottom = 40.0
 theme_override_styles/normal = SubResource("StyleBoxFlat_hitbox")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_hitbox")
 theme_override_styles/hover = SubResource("StyleBoxFlat_hitbox")
@@ -177,43 +146,39 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_hitbox")
 position = Vector2(0, -110)
 
 [node name="Plot_pani_puri_cart" type="Node2D" parent="CityWorld/StarterStreet"]
-position = Vector2(500, 640)
-
-[node name="PlotBase" type="Sprite2D" parent="CityWorld/StarterStreet/Plot_pani_puri_cart"]
-scale = Vector2(0.55, 0.55)
-texture = ExtResource("5_plot")
+position = Vector2(530, 510)
 
 [node name="BusinessSprite" type="Sprite2D" parent="CityWorld/StarterStreet/Plot_pani_puri_cart"]
 position = Vector2(0, -50)
-scale = Vector2(0.32, 0.32)
-texture = ExtResource("7_pani_puri")
+scale = Vector2(0.24, 0.24)
+texture = ExtResource("5_pani_puri")
 
 [node name="TapRing" type="TextureProgressBar" parent="CityWorld/StarterStreet/Plot_pani_puri_cart"]
-modulate = Color(0.2, 0.85, 1, 0.9)
-offset_left = -56.0
-offset_top = -150.0
-offset_right = 72.0
-offset_bottom = -22.0
-scale = Vector2(0.85, 0.85)
+modulate = Color(0.2, 0.9, 1, 0.95)
+offset_left = -50.0
+offset_top = -140.0
+offset_right = 78.0
+offset_bottom = -12.0
+scale = Vector2(0.78, 0.78)
 fill_mode = 4
-texture_under = ExtResource("11_ring_bg")
-texture_progress = ExtResource("12_ring_fg")
+texture_under = ExtResource("9_ring_bg")
+texture_progress = ExtResource("10_ring_fg")
 
 [node name="HoldPrompt" type="Label" parent="CityWorld/StarterStreet/Plot_pani_puri_cart"]
 offset_left = -75.0
-offset_top = -174.0
+offset_top = -165.0
 offset_right = 75.0
-offset_bottom = -154.0
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+offset_bottom = -145.0
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "HOLD TO SERVE"
 horizontal_alignment = 1
 
 [node name="LockedCard" type="PanelContainer" parent="CityWorld/StarterStreet/Plot_pani_puri_cart"]
-offset_left = -80.0
-offset_top = -70.0
-offset_right = 80.0
-offset_bottom = 20.0
+offset_left = -85.0
+offset_top = -65.0
+offset_right = 85.0
+offset_bottom = 25.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_locked_card")
 
 [node name="VBox" type="VBoxContainer" parent="CityWorld/StarterStreet/Plot_pani_puri_cart/LockedCard"]
@@ -221,23 +186,23 @@ layout_mode = 2
 
 [node name="TitleLabel" type="Label" parent="CityWorld/StarterStreet/Plot_pani_puri_cart/LockedCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "🔒 Pani Puri Cart"
 horizontal_alignment = 1
 
 [node name="SubLabel" type="Label" parent="CityWorld/StarterStreet/Plot_pani_puri_cart/LockedCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
 theme_override_font_sizes/font_size = 11
 text = "Tap to unlock"
 horizontal_alignment = 1
 
 [node name="TapHitbox" type="Button" parent="CityWorld/StarterStreet/Plot_pani_puri_cart"]
-offset_left = -85.0
+offset_left = -90.0
 offset_top = -160.0
-offset_right = 85.0
-offset_bottom = 50.0
+offset_right = 90.0
+offset_bottom = 40.0
 theme_override_styles/normal = SubResource("StyleBoxFlat_hitbox")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_hitbox")
 theme_override_styles/hover = SubResource("StyleBoxFlat_hitbox")
@@ -247,43 +212,39 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_hitbox")
 position = Vector2(0, -110)
 
 [node name="Plot_fruit_stand" type="Node2D" parent="CityWorld/StarterStreet"]
-position = Vector2(250, 830)
-
-[node name="PlotBase" type="Sprite2D" parent="CityWorld/StarterStreet/Plot_fruit_stand"]
-scale = Vector2(0.55, 0.55)
-texture = ExtResource("5_plot")
+position = Vector2(700, 370)
 
 [node name="BusinessSprite" type="Sprite2D" parent="CityWorld/StarterStreet/Plot_fruit_stand"]
 position = Vector2(0, -50)
-scale = Vector2(0.32, 0.32)
-texture = ExtResource("8_fruit")
+scale = Vector2(0.24, 0.24)
+texture = ExtResource("6_fruit")
 
 [node name="TapRing" type="TextureProgressBar" parent="CityWorld/StarterStreet/Plot_fruit_stand"]
-modulate = Color(0.2, 0.85, 1, 0.9)
-offset_left = -56.0
-offset_top = -150.0
-offset_right = 72.0
-offset_bottom = -22.0
-scale = Vector2(0.85, 0.85)
+modulate = Color(0.2, 0.9, 1, 0.95)
+offset_left = -50.0
+offset_top = -140.0
+offset_right = 78.0
+offset_bottom = -12.0
+scale = Vector2(0.78, 0.78)
 fill_mode = 4
-texture_under = ExtResource("11_ring_bg")
-texture_progress = ExtResource("12_ring_fg")
+texture_under = ExtResource("9_ring_bg")
+texture_progress = ExtResource("10_ring_fg")
 
 [node name="HoldPrompt" type="Label" parent="CityWorld/StarterStreet/Plot_fruit_stand"]
 offset_left = -75.0
-offset_top = -174.0
+offset_top = -165.0
 offset_right = 75.0
-offset_bottom = -154.0
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+offset_bottom = -145.0
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "HOLD TO SERVE"
 horizontal_alignment = 1
 
 [node name="LockedCard" type="PanelContainer" parent="CityWorld/StarterStreet/Plot_fruit_stand"]
-offset_left = -80.0
-offset_top = -70.0
-offset_right = 80.0
-offset_bottom = 20.0
+offset_left = -85.0
+offset_top = -65.0
+offset_right = 85.0
+offset_bottom = 25.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_locked_card")
 
 [node name="VBox" type="VBoxContainer" parent="CityWorld/StarterStreet/Plot_fruit_stand/LockedCard"]
@@ -291,23 +252,23 @@ layout_mode = 2
 
 [node name="TitleLabel" type="Label" parent="CityWorld/StarterStreet/Plot_fruit_stand/LockedCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "🔒 Fruit Stand"
 horizontal_alignment = 1
 
 [node name="SubLabel" type="Label" parent="CityWorld/StarterStreet/Plot_fruit_stand/LockedCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
 theme_override_font_sizes/font_size = 11
 text = "Tap to unlock"
 horizontal_alignment = 1
 
 [node name="TapHitbox" type="Button" parent="CityWorld/StarterStreet/Plot_fruit_stand"]
-offset_left = -85.0
+offset_left = -90.0
 offset_top = -160.0
-offset_right = 85.0
-offset_bottom = 50.0
+offset_right = 90.0
+offset_bottom = 40.0
 theme_override_styles/normal = SubResource("StyleBoxFlat_hitbox")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_hitbox")
 theme_override_styles/hover = SubResource("StyleBoxFlat_hitbox")
@@ -319,66 +280,45 @@ position = Vector2(0, -110)
 [node name="MarketLane" type="Node2D" parent="CityWorld"]
 visible = false
 
-[node name="StreetTiles" type="Node2D" parent="CityWorld/MarketLane"]
-
-[node name="RoadTile1" type="Sprite2D" parent="CityWorld/MarketLane/StreetTiles"]
-position = Vector2(200, 940)
-scale = Vector2(0.52, 0.52)
-texture = ExtResource("2_road")
-
-[node name="RoadTile2" type="Sprite2D" parent="CityWorld/MarketLane/StreetTiles"]
-position = Vector2(440, 1040)
-scale = Vector2(0.52, 0.52)
-texture = ExtResource("2_road")
-
-[node name="SidewalkTile1" type="Sprite2D" parent="CityWorld/MarketLane/StreetTiles"]
-position = Vector2(250, 700)
-scale = Vector2(0.52, 0.52)
-texture = ExtResource("4_sidewalk")
-
-[node name="SidewalkTile2" type="Sprite2D" parent="CityWorld/MarketLane/StreetTiles"]
-position = Vector2(490, 800)
-scale = Vector2(0.52, 0.52)
-texture = ExtResource("4_sidewalk")
+[node name="Background" type="Sprite2D" parent="CityWorld/MarketLane"]
+position = Vector2(360, 640)
+scale = Vector2(0.9375, 0.9302)
+texture = ExtResource("3_market_bg")
 
 [node name="Plot_bakery" type="Node2D" parent="CityWorld/MarketLane"]
-position = Vector2(250, 560)
-
-[node name="PlotBase" type="Sprite2D" parent="CityWorld/MarketLane/Plot_bakery"]
-scale = Vector2(0.58, 0.58)
-texture = ExtResource("5_plot")
+position = Vector2(560, 830)
 
 [node name="BusinessSprite" type="Sprite2D" parent="CityWorld/MarketLane/Plot_bakery"]
 position = Vector2(0, -50)
-scale = Vector2(0.32, 0.32)
-texture = ExtResource("9_bakery")
+scale = Vector2(0.24, 0.24)
+texture = ExtResource("7_bakery")
 
 [node name="TapRing" type="TextureProgressBar" parent="CityWorld/MarketLane/Plot_bakery"]
-modulate = Color(0.2, 0.85, 1, 0.9)
-offset_left = -56.0
-offset_top = -150.0
-offset_right = 72.0
-offset_bottom = -22.0
-scale = Vector2(0.85, 0.85)
+modulate = Color(0.2, 0.9, 1, 0.95)
+offset_left = -50.0
+offset_top = -140.0
+offset_right = 78.0
+offset_bottom = -12.0
+scale = Vector2(0.78, 0.78)
 fill_mode = 4
-texture_under = ExtResource("11_ring_bg")
-texture_progress = ExtResource("12_ring_fg")
+texture_under = ExtResource("9_ring_bg")
+texture_progress = ExtResource("10_ring_fg")
 
 [node name="HoldPrompt" type="Label" parent="CityWorld/MarketLane/Plot_bakery"]
 offset_left = -75.0
-offset_top = -174.0
+offset_top = -165.0
 offset_right = 75.0
-offset_bottom = -154.0
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+offset_bottom = -145.0
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "HOLD TO SERVE"
 horizontal_alignment = 1
 
 [node name="LockedCard" type="PanelContainer" parent="CityWorld/MarketLane/Plot_bakery"]
-offset_left = -80.0
-offset_top = -70.0
-offset_right = 80.0
-offset_bottom = 20.0
+offset_left = -85.0
+offset_top = -65.0
+offset_right = 85.0
+offset_bottom = 25.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_locked_card")
 
 [node name="VBox" type="VBoxContainer" parent="CityWorld/MarketLane/Plot_bakery/LockedCard"]
@@ -386,23 +326,23 @@ layout_mode = 2
 
 [node name="TitleLabel" type="Label" parent="CityWorld/MarketLane/Plot_bakery/LockedCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "🔒 Bakery"
 horizontal_alignment = 1
 
 [node name="SubLabel" type="Label" parent="CityWorld/MarketLane/Plot_bakery/LockedCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
 theme_override_font_sizes/font_size = 11
 text = "Tap to unlock"
 horizontal_alignment = 1
 
 [node name="TapHitbox" type="Button" parent="CityWorld/MarketLane/Plot_bakery"]
-offset_left = -85.0
+offset_left = -90.0
 offset_top = -160.0
-offset_right = 85.0
-offset_bottom = 50.0
+offset_right = 90.0
+offset_bottom = 40.0
 theme_override_styles/normal = SubResource("StyleBoxFlat_hitbox")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_hitbox")
 theme_override_styles/hover = SubResource("StyleBoxFlat_hitbox")
@@ -412,43 +352,39 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_hitbox")
 position = Vector2(0, -110)
 
 [node name="Plot_cafe" type="Node2D" parent="CityWorld/MarketLane"]
-position = Vector2(490, 720)
-
-[node name="PlotBase" type="Sprite2D" parent="CityWorld/MarketLane/Plot_cafe"]
-scale = Vector2(0.58, 0.58)
-texture = ExtResource("5_plot")
+position = Vector2(640, 530)
 
 [node name="BusinessSprite" type="Sprite2D" parent="CityWorld/MarketLane/Plot_cafe"]
 position = Vector2(0, -50)
-scale = Vector2(0.32, 0.32)
-texture = ExtResource("10_cafe")
+scale = Vector2(0.24, 0.24)
+texture = ExtResource("8_cafe")
 
 [node name="TapRing" type="TextureProgressBar" parent="CityWorld/MarketLane/Plot_cafe"]
-modulate = Color(0.2, 0.85, 1, 0.9)
-offset_left = -56.0
-offset_top = -150.0
-offset_right = 72.0
-offset_bottom = -22.0
-scale = Vector2(0.85, 0.85)
+modulate = Color(0.2, 0.9, 1, 0.95)
+offset_left = -50.0
+offset_top = -140.0
+offset_right = 78.0
+offset_bottom = -12.0
+scale = Vector2(0.78, 0.78)
 fill_mode = 4
-texture_under = ExtResource("11_ring_bg")
-texture_progress = ExtResource("12_ring_fg")
+texture_under = ExtResource("9_ring_bg")
+texture_progress = ExtResource("10_ring_fg")
 
 [node name="HoldPrompt" type="Label" parent="CityWorld/MarketLane/Plot_cafe"]
 offset_left = -75.0
-offset_top = -174.0
+offset_top = -165.0
 offset_right = 75.0
-offset_bottom = -154.0
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+offset_bottom = -145.0
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "HOLD TO SERVE"
 horizontal_alignment = 1
 
 [node name="LockedCard" type="PanelContainer" parent="CityWorld/MarketLane/Plot_cafe"]
-offset_left = -80.0
-offset_top = -70.0
-offset_right = 80.0
-offset_bottom = 20.0
+offset_left = -85.0
+offset_top = -65.0
+offset_right = 85.0
+offset_bottom = 25.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_locked_card")
 
 [node name="VBox" type="VBoxContainer" parent="CityWorld/MarketLane/Plot_cafe/LockedCard"]
@@ -456,23 +392,23 @@ layout_mode = 2
 
 [node name="TitleLabel" type="Label" parent="CityWorld/MarketLane/Plot_cafe/LockedCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "🔒 Café"
 horizontal_alignment = 1
 
 [node name="SubLabel" type="Label" parent="CityWorld/MarketLane/Plot_cafe/LockedCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
 theme_override_font_sizes/font_size = 11
 text = "Tap to unlock"
 horizontal_alignment = 1
 
 [node name="TapHitbox" type="Button" parent="CityWorld/MarketLane/Plot_cafe"]
-offset_left = -85.0
+offset_left = -90.0
 offset_top = -160.0
-offset_right = 85.0
-offset_bottom = 50.0
+offset_right = 90.0
+offset_bottom = 40.0
 theme_override_styles/normal = SubResource("StyleBoxFlat_hitbox")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_hitbox")
 theme_override_styles/hover = SubResource("StyleBoxFlat_hitbox")
@@ -592,16 +528,16 @@ size_flags_vertical = 8
 mouse_filter = 2
 
 [node name="DetailsButton" type="Button" parent="SafeContainer/BottomHUD"]
-custom_minimum_size = Vector2(0, 54)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -54.0
+offset_top = -56.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.1, 0.1, 0.1, 1)
+theme_override_colors/font_color = Color(0.12, 0.1, 0.05, 1)
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_gold")
 text = "⚙️ UPGRADE CHAI STALL"
@@ -615,34 +551,34 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="BusinessDetailsPanel" parent="Panels" instance=ExtResource("13_details")]
+[node name="BusinessDetailsPanel" parent="Panels" instance=ExtResource("11_details")]
 visible = false
 layout_mode = 1
 
-[node name="OfflineEarningsScreen" parent="Panels" instance=ExtResource("14_offline")]
+[node name="OfflineEarningsScreen" parent="Panels" instance=ExtResource("12_offline")]
 visible = false
 layout_mode = 1
 
-[node name="ObjectivesScreen" parent="Panels" instance=ExtResource("15_objectives")]
+[node name="ObjectivesScreen" parent="Panels" instance=ExtResource("13_objectives")]
 visible = false
 layout_mode = 1
 
-[node name="EmpireOverviewScreen" parent="Panels" instance=ExtResource("16_empire")]
+[node name="EmpireOverviewScreen" parent="Panels" instance=ExtResource("14_empire")]
 visible = false
 layout_mode = 1
 
-[node name="BusinessUnlockScreen" parent="Panels" instance=ExtResource("17_unlock")]
+[node name="BusinessUnlockScreen" parent="Panels" instance=ExtResource("15_unlock")]
 visible = false
 layout_mode = 1
 
-[node name="SettingsScreen" parent="Panels" instance=ExtResource("18_settings")]
+[node name="SettingsScreen" parent="Panels" instance=ExtResource("16_settings")]
 visible = false
 layout_mode = 1
 
-[node name="LockedHintModal" parent="Panels" instance=ExtResource("19_locked_hint")]
+[node name="LockedHintModal" parent="Panels" instance=ExtResource("17_locked_hint")]
 visible = false
 layout_mode = 1
 
-[node name="TutorialOverlay" parent="Panels" instance=ExtResource("20_tutorial")]
+[node name="TutorialOverlay" parent="Panels" instance=ExtResource("18_tutorial")]
 visible = false
 layout_mode = 1
