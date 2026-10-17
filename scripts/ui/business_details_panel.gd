@@ -17,6 +17,11 @@ var _is_open: bool = false
 @onready var income_rate_label: Label = $SafeContainer/PanelRoot/VBox/StatsCard/HBox/IncomeRateLabel
 @onready var cycle_time_label: Label = $SafeContainer/PanelRoot/VBox/StatsCard/HBox/CycleTimeLabel
 
+# Synergy Card
+@onready var synergy_card: PanelContainer = $SafeContainer/PanelRoot/VBox/SynergyCard
+@onready var synergy_title: Label = $SafeContainer/PanelRoot/VBox/SynergyCard/VBox/SynergyTitle
+@onready var synergy_desc: Label = $SafeContainer/PanelRoot/VBox/SynergyCard/VBox/SynergyDesc
+
 # Bulk buy buttons
 @onready var bulk_1_btn: Button = $SafeContainer/PanelRoot/VBox/BulkSection/HBox/Bulk1
 @onready var bulk_10_btn: Button = $SafeContainer/PanelRoot/VBox/BulkSection/HBox/Bulk10
@@ -42,6 +47,9 @@ func _ready() -> void:
 	EconomyService.cash_changed.connect(func(_c): if _is_open: refresh())
 	EconomyService.upgrade_purchased.connect(func(_b, _t, _l): if _is_open: refresh())
 	EconomyService.business_automated.connect(func(_b): if _is_open: refresh())
+	EconomyService.synergy_activated.connect(func(_s): if _is_open: refresh())
+
+	UserSettings.get_instance().settings_changed.connect(func(): if _is_open: refresh())
 
 	_apply_safe_area()
 
@@ -85,10 +93,7 @@ func refresh() -> void:
 	var b_cfg: Dictionary = EconomyService.config.get_business(business_id)
 	title_label.text = b_cfg.get("name", "Business")
 
-	var levels: Dictionary = b_state.get("levels", {})
-	var total_lvl: int = 0
-	for lvl in levels.values():
-		total_lvl += int(lvl)
+	var total_lvl: int = EconomyService.get_business_level(business_id)
 	level_label.text = "Lv. %d" % total_lvl
 
 	var is_auto: bool = b_state.get("automated", false)
@@ -103,7 +108,9 @@ func refresh() -> void:
 	cycle_time_label.text = "Cycle: %.1fs" % cycle_sec
 
 	var income_rate: BigNumber = b_state.get("income_per_second", BigNumber.zero())
-	income_rate_label.text = "₹ %s / s" % income_rate.to_formatted(false)
+	income_rate_label.text = UserSettings.format_rate(income_rate)
+
+	_refresh_synergy()
 
 	# Staff: Manager
 	if is_auto or b_state.get("has_manager", false):
@@ -111,7 +118,7 @@ func refresh() -> void:
 		hire_manager_btn.disabled = true
 	else:
 		var mgr_cost: BigNumber = EconomyService.get_staff_cost(business_id, "manager")
-		hire_manager_btn.text = "Hire Manager (₹ %s)" % mgr_cost.to_formatted(false)
+		hire_manager_btn.text = "Hire Manager (%s)" % UserSettings.format_cash(mgr_cost)
 		hire_manager_btn.disabled = not EconomyService.can_afford(mgr_cost)
 
 	# Staff: Worker
@@ -121,10 +128,47 @@ func refresh() -> void:
 		hire_worker_btn.text = "Worker (Max) ✓"
 		hire_worker_btn.disabled = true
 	else:
-		hire_worker_btn.text = "Worker (%d) +20%% (₹ %s)" % [workers_count, worker_cost.to_formatted(false)]
+		hire_worker_btn.text = "Worker (%d) +20%% (%s)" % [workers_count, UserSettings.format_cash(worker_cost)]
 		hire_worker_btn.disabled = not EconomyService.can_afford(worker_cost)
 
 	_refresh_tracks(b_state)
+
+func _refresh_synergy() -> void:
+	if not EconomyService.config:
+		synergy_card.visible = false
+		return
+
+	var found_synergy: Dictionary = {}
+	for syn: Dictionary in EconomyService.config.synergies:
+		if business_id in syn.get("applies_to", []) or business_id in syn.get("requires", []):
+			found_synergy = syn
+			break
+
+	if found_synergy.is_empty():
+		synergy_card.visible = false
+		return
+
+	synergy_card.visible = true
+	var active_synergies: Array[String] = EconomyService.get_active_synergies()
+	var is_active: bool = active_synergies.has(str(found_synergy.get("id", "")))
+	var bonus_pct: int = int((float(found_synergy.get("income_multiplier", 1.0)) - 1.0) * 100.0)
+
+	if is_active:
+		synergy_title.text = "⚡ Synergy Active: %s (+%d%%)" % [found_synergy.get("name", "Synergy"), bonus_pct]
+		synergy_title.add_theme_color_override("font_color", Color(0.2, 0.95, 0.8))
+		synergy_desc.text = "Both businesses are Lv. %d+! +%d%% income boost active." % [
+			int(found_synergy.get("min_level_each", 10)),
+			bonus_pct
+		]
+	else:
+		synergy_title.text = "⚡ Synergy: %s (Inactive)" % found_synergy.get("name", "Synergy")
+		synergy_title.add_theme_color_override("font_color", Color(0.75, 0.75, 0.8))
+		var req_names: Array[String] = []
+		for req_id: String in found_synergy.get("requires", []):
+			var b_name: String = EconomyService.config.get_business(req_id).get("name", req_id)
+			var cur_lvl: int = EconomyService.get_business_level(req_id)
+			req_names.append("%s (Lv. %d/%d)" % [b_name, cur_lvl, int(found_synergy.get("min_level_each", 10))])
+		synergy_desc.text = "Needs: %s for +%d%% income" % [" & ".join(req_names), bonus_pct]
 
 func _refresh_tracks(b_state: Dictionary) -> void:
 	var track_keys: Array = ["equipment", "capacity", "quality", "marketing"]
@@ -148,7 +192,7 @@ func _refresh_tracks(b_state: Dictionary) -> void:
 		elif current_bulk == EconomyService.BULK_MAX:
 			bulk_label_str = "+ Max"
 
-		buy_btn.text = "%s\n₹ %s" % [bulk_label_str, cost.to_formatted(false)]
+		buy_btn.text = "%s\n%s" % [bulk_label_str, UserSettings.format_cash(cost)]
 		buy_btn.disabled = not EconomyService.can_afford(cost)
 
 		for c in buy_btn.pressed.get_connections():

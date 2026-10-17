@@ -113,6 +113,25 @@ theme_override_colors/font_color = Color(0.75, 0.8, 0.9, 1)
 theme_override_font_sizes/font_size = 16
 text = "Cycle: 2.0s"
 
+[node name="SynergyCard" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="SafeContainer/PanelRoot/VBox/SynergyCard"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SynergyTitle" type="Label" parent="SafeContainer/PanelRoot/VBox/SynergyCard/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "⚡ Synergy Status"
+
+[node name="SynergyDesc" type="Label" parent="SafeContainer/PanelRoot/VBox/SynergyCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.78, 1)
+theme_override_font_sizes/font_size = 13
+text = "Checking synergy..."
+
 [node name="BulkSection" type="HBoxContainer" parent="SafeContainer/PanelRoot/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 8
