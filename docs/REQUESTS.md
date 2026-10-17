@@ -18,3 +18,4 @@ then moves it to "Done".
 
 - 2026-10-17 — Project scaffold created.
 - 2026-10-17 — Backend (Nakama + TypeScript) scaffold in `server/`, mobile guide in `docs/MOBILE.md`.
+- 2026-10-17 — Installed export templates, installed and enabled GUT 9.7.1, verified Android SDK & JDK 17 paths, created and backed up upload.keystore outside repository.
