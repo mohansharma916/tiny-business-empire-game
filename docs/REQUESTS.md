@@ -20,3 +20,5 @@ then moves it to "Done".
 - 2026-10-17 — Backend (Nakama + TypeScript) scaffold in `server/`, mobile guide in `docs/MOBILE.md`.
 - 2026-10-17 — Installed export templates, installed and enabled GUT 9.7.1, verified Android SDK & JDK 17 paths, created and backed up upload.keystore outside repository.
 - 2026-10-17 — Proposed 2D isometric art direction and generated placeholder sprites in assets/placeholder/ (Chai Stall Levels 1-3, customer, street tiles).
+- 2026-10-17 — Built Main City scene, Business Details panel, and Offline Earnings screen on branch ui/panels with customer pooling, 4Hz rate limiter, back button handling, and Web export.
+- 2026-10-17 — Built guided onboarding tutorial, Objectives screen, and Empire Overview screen on branch ui/onboarding with externalized strings.

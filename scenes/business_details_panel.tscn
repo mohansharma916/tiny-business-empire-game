@@ -1,0 +1,314 @@
+[gd_scene format=3 uid="uid://df7s6xyeq883j"]
+
+[ext_resource type="Script" path="res://scripts/ui/business_details_panel.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.12, 0.12, 0.16, 0.98)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.18, 0.18, 0.24, 0.9)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 14.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+
+[node name="BusinessDetailsPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.72)
+
+[node name="SafeContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 40
+
+[node name="PanelRoot" type="PanelContainer" parent="SafeContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="SafeContainer/PanelRoot"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Header" type="HBoxContainer" parent="SafeContainer/PanelRoot/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "Chai Stall"
+
+[node name="LevelBadge" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox/Header"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Label" type="Label" parent="SafeContainer/PanelRoot/VBox/Header/LevelBadge"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.84, 0.2, 1)
+theme_override_font_sizes/font_size = 15
+text = "Lv. 4"
+
+[node name="StatusBadge" type="Label" parent="SafeContainer/PanelRoot/VBox/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "MANUAL (TAP)"
+
+[node name="CloseButton" type="Button" parent="SafeContainer/PanelRoot/VBox/Header"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "✕"
+
+[node name="StatsCard" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="HBox" type="HBoxContainer" parent="SafeContainer/PanelRoot/VBox/StatsCard"]
+layout_mode = 2
+
+[node name="IncomeRateLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/StatsCard/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.3, 0.9, 0.5, 1)
+theme_override_font_sizes/font_size = 18
+text = "₹ 0 / s"
+
+[node name="CycleTimeLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/StatsCard/HBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.8, 0.9, 1)
+theme_override_font_sizes/font_size = 16
+text = "Cycle: 2.0s"
+
+[node name="BulkSection" type="HBoxContainer" parent="SafeContainer/PanelRoot/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BulkLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/BulkSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Buy:"
+
+[node name="HBox" type="HBoxContainer" parent="SafeContainer/PanelRoot/VBox/BulkSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Bulk1" type="Button" parent="SafeContainer/PanelRoot/VBox/BulkSection/HBox"]
+custom_minimum_size = Vector2(56, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "×1"
+
+[node name="Bulk10" type="Button" parent="SafeContainer/PanelRoot/VBox/BulkSection/HBox"]
+custom_minimum_size = Vector2(56, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+flat = true
+text = "×10"
+
+[node name="BulkMax" type="Button" parent="SafeContainer/PanelRoot/VBox/BulkSection/HBox"]
+custom_minimum_size = Vector2(56, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+flat = true
+text = "×Max"
+
+[node name="Scroll" type="ScrollContainer" parent="SafeContainer/PanelRoot/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="TracksContainer" type="VBoxContainer" parent="SafeContainer/PanelRoot/VBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Track_equipment" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="HBox" type="HBoxContainer" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_equipment"]
+layout_mode = 2
+
+[node name="InfoVBox" type="VBoxContainer" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_equipment/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TrackName" type="Label" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_equipment/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Stove Equipment"
+
+[node name="Desc" type="Label" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_equipment/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.65, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+text = "Shorter cycle time (-3%/lvl)"
+
+[node name="LevelLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_equipment/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "Level 1"
+
+[node name="BuyButton" type="Button" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_equipment/HBox"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "UPGRADE
+₹ 25"
+
+[node name="Track_capacity" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="HBox" type="HBoxContainer" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_capacity"]
+layout_mode = 2
+
+[node name="InfoVBox" type="VBoxContainer" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_capacity/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TrackName" type="Label" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_capacity/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Serving Capacity"
+
+[node name="Desc" type="Label" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_capacity/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.65, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+text = "More customers served per cycle"
+
+[node name="LevelLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_capacity/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "Level 1"
+
+[node name="BuyButton" type="Button" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_capacity/HBox"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "UPGRADE
+₹ 60"
+
+[node name="Track_quality" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="HBox" type="HBoxContainer" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_quality"]
+layout_mode = 2
+
+[node name="InfoVBox" type="VBoxContainer" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_quality/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TrackName" type="Label" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_quality/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Tea Quality & Spice"
+
+[node name="Desc" type="Label" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_quality/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.65, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+text = "Higher revenue per customer (+8%)"
+
+[node name="LevelLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_quality/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "Level 1"
+
+[node name="BuyButton" type="Button" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_quality/HBox"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "UPGRADE
+₹ 40"
+
+[node name="Track_marketing" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="HBox" type="HBoxContainer" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_marketing"]
+layout_mode = 2
+
+[node name="InfoVBox" type="VBoxContainer" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_marketing/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TrackName" type="Label" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_marketing/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Street Buzz Marketing"
+
+[node name="Desc" type="Label" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_marketing/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.65, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+text = "Increases customer traffic demand"
+
+[node name="LevelLabel" type="Label" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_marketing/HBox/InfoVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "Level 1"
+
+[node name="BuyButton" type="Button" parent="SafeContainer/PanelRoot/VBox/Scroll/TracksContainer/Track_marketing/HBox"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "UPGRADE
+₹ 50"
+
+[node name="StaffCard" type="PanelContainer" parent="SafeContainer/PanelRoot/VBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="HBox" type="HBoxContainer" parent="SafeContainer/PanelRoot/VBox/StaffCard"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ManagerBtn" type="Button" parent="SafeContainer/PanelRoot/VBox/StaffCard/HBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Hire Manager (₹ 500)"
+
+[node name="WorkerBtn" type="Button" parent="SafeContainer/PanelRoot/VBox/StaffCard/HBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Worker (₹ 100)"
