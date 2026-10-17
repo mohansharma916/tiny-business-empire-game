@@ -19,3 +19,4 @@ then moves it to "Done".
 - 2026-10-17 — Project scaffold created.
 - 2026-10-17 — Backend (Nakama + TypeScript) scaffold in `server/`, mobile guide in `docs/MOBILE.md`.
 - 2026-10-17 — Installed export templates, installed and enabled GUT 9.7.1, verified Android SDK & JDK 17 paths, created and backed up upload.keystore outside repository.
+- 2026-10-17 — Claude Code: Android (Gradle, arm64-v8a + armeabi-v7a, min SDK 26, portrait, INTERNET/ACCESS_NETWORK_STATE/VIBRATE only) and Web export presets; boot scene `scenes/boot.tscn` + `scripts/ui/boot.gd` (added at the human's request; Antigravity owns them from here); `scripts/core/app_lifecycle.gd` with empty hooks. Branch core/mobile-foundation.
