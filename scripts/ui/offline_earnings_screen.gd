@@ -18,6 +18,11 @@ func _ready() -> void:
 	double_ad_btn.pressed.connect(_on_double_ad)
 	_apply_safe_area()
 
+	EconomyService.offline_earnings_available.connect(_on_offline_earnings_available)
+
+func _on_offline_earnings_available(_summary: Dictionary) -> void:
+	show_offline_earnings()
+
 func _apply_safe_area() -> void:
 	var safe := DisplayServer.get_display_safe_area()
 	var vp_size := get_viewport_rect().size
@@ -32,10 +37,24 @@ func show_offline_earnings(simulated_seconds: float = 3600.0) -> void:
 	if not EconomyService:
 		return
 
-	var calculation: Dictionary = EconomyService.calculate_offline_earnings(simulated_seconds)
-	_current_earned = calculation.get("earned", BigNumber.zero())
-	var elapsed_sec: float = float(calculation.get("elapsed_seconds", 0.0))
-	var is_capped: bool = calculation.get("capped", false)
+	var pending: Dictionary = EconomyService.get_pending_offline_earnings()
+	var elapsed_sec: float = 0.0
+	var is_capped: bool = false
+
+	if not pending.is_empty():
+		_current_earned = pending.get("total", BigNumber.zero())
+		elapsed_sec = float(pending.get("seconds_away", 0.0))
+		var credited_sec: float = float(pending.get("credited_seconds", 0.0))
+		is_capped = elapsed_sec > credited_sec
+	else:
+		# Fallback simulation if testing manually via Offline HUD button
+		elapsed_sec = simulated_seconds
+		var inc := EconomyService.get_income_per_second()
+		if inc.is_zero():
+			# Baseline simulation
+			_current_earned = BigNumber.from_float(50.0)
+		else:
+			_current_earned = inc.multiply_scalar(elapsed_sec * 0.5)
 
 	var hours: int = int(elapsed_sec / 3600.0)
 	var minutes: int = int(fmod(elapsed_sec, 3600.0) / 60.0)
@@ -55,15 +74,19 @@ func show_offline_earnings(simulated_seconds: float = 3600.0) -> void:
 	for child in breakdown_list.get_children():
 		child.queue_free()
 
-	var breakdown: Dictionary = calculation.get("breakdown", {})
-	for b_name in breakdown:
+	var per_business: Dictionary = pending.get("per_business", {})
+	if per_business.is_empty():
+		per_business = {"chai_stall": _current_earned}
+
+	for b_id in per_business:
 		var row := HBoxContainer.new()
 		var name_lbl := Label.new()
-		name_lbl.text = b_name
+		var b_cfg: Dictionary = EconomyService.config.get_business(b_id)
+		name_lbl.text = b_cfg.get("name", "Chai Stall")
 		name_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		name_lbl.add_theme_font_size_override("font_size", 15)
 
-		var val: BigNumber = breakdown[b_name]
+		var val: BigNumber = per_business[b_id]
 		var val_lbl := Label.new()
 		val_lbl.text = "+ ₹ %s" % val.to_formatted(false)
 		val_lbl.add_theme_color_override("font_color", Color(0.3, 0.9, 0.4))
@@ -74,7 +97,7 @@ func show_offline_earnings(simulated_seconds: float = 3600.0) -> void:
 		breakdown_list.add_child(row)
 
 	collect_btn.text = "COLLECT ₹ %s" % _current_earned.to_formatted(false)
-	var double_val := _current_earned.mul(2.0)
+	var double_val: BigNumber = _current_earned.multiply_scalar(2.0)
 	double_ad_btn.text = "🎬 DOUBLE REWARD (2× ₹ %s)" % double_val.to_formatted(false)
 
 	_is_open = true
@@ -83,7 +106,11 @@ func show_offline_earnings(simulated_seconds: float = 3600.0) -> void:
 func _on_collect() -> void:
 	if not _is_open:
 		return
-	var claimed := EconomyService.claim_offline_earnings(false)
+	var claimed: BigNumber = EconomyService.claim_offline_earnings()
+	if claimed.is_zero() and not _current_earned.is_zero():
+		# Fallback simulation claim
+		EconomyService._earn(_current_earned)
+		claimed = _current_earned
 	_is_open = false
 	visible = false
 	closed.emit(claimed)
@@ -91,10 +118,14 @@ func _on_collect() -> void:
 func _on_double_ad() -> void:
 	if not _is_open:
 		return
-	var claimed := EconomyService.claim_offline_earnings(true)
+	var claimed: BigNumber = EconomyService.claim_offline_earnings()
+	if claimed.is_zero() and not _current_earned.is_zero():
+		claimed = _current_earned
+	var doubled: BigNumber = claimed.multiply_scalar(2.0)
+	EconomyService._earn(doubled)
 	_is_open = false
 	visible = false
-	closed.emit(claimed)
+	closed.emit(doubled)
 
 func close_screen() -> void:
 	_on_collect()

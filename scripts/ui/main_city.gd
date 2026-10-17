@@ -124,61 +124,65 @@ func _on_panel_closed() -> void:
 	_refresh_hud_now()
 
 func _pause_city(paused: bool) -> void:
-	# Pauses animations and updates of the city world behind the panel
 	city_world.process_mode = Node.PROCESS_MODE_DISABLED if paused else Node.PROCESS_MODE_INHERIT
 
 func _setup_tap_and_hold() -> void:
-	tap_hitbox.button_down.connect(func(): _is_pressing_stall = true)
+	tap_hitbox.button_down.connect(func():
+		_is_pressing_stall = true
+		EconomyService.tap_business("chai_stall")
+	)
 	tap_hitbox.button_up.connect(func(): _is_pressing_stall = false)
 
 func _process(delta: float) -> void:
-	# Limit HUD updates to at most 4 times per second (PRD rule)
 	_hud_update_accumulator += delta
 	if _hud_update_accumulator >= HUD_UPDATE_INTERVAL:
 		_hud_update_accumulator = 0.0
 		_refresh_hud_now()
 
-	# Process manual tap-and-hold serving or automated cycle
 	_process_serving_cycle(delta)
 	_process_customer_movement(delta)
 
-func _process_serving_cycle(delta: float) -> void:
-	var b_state := EconomyService.get_business_state("chai_stall")
-	var is_auto: bool = b_state.get("is_automated", false)
-	var cycle_time := EconomyService.calculate_cycle_time("chai_stall")
+func _process_serving_cycle(_delta: float) -> void:
+	var b_state: Dictionary = EconomyService.get_business_state("chai_stall")
+	if b_state.is_empty():
+		return
+
+	var is_auto: bool = b_state.get("automated", false)
+	var is_running: bool = b_state.get("cycle_running", false)
+	var progress: float = float(b_state.get("cycle_progress", 0.0))
 
 	if is_auto:
-		# Auto-running: continuous progress loop
-		_serving_progress += delta / cycle_time
-		if _serving_progress >= 1.0:
-			_serving_progress = 0.0
-			_spawn_customer_purchase_effect()
-		tap_ring.value = _serving_progress * 100.0
-	else:
-		# Manual: requires player pressing or holding
+		tap_ring.value = progress * 100.0
 		if _is_pressing_stall:
-			_serving_progress += delta / cycle_time
-			if _serving_progress >= 1.0:
-				_serving_progress = 0.0
-				var result: Dictionary = EconomyService.tap_business("chai_stall")
-				var earned: BigNumber = result.get("revenue", BigNumber.zero())
-				_pop_cash_number(earned)
-				_spawn_customer_purchase_effect()
-				if tutorial_overlay.is_active and tutorial_overlay.current_step == 1:
-					tutorial_overlay.advance_to_step(2)
-			tap_ring.value = _serving_progress * 100.0
-		else:
-			# Decay slowly if released
-			_serving_progress = maxf(0.0, _serving_progress - delta * 0.5)
-			tap_ring.value = _serving_progress * 100.0
+			EconomyService.tap_business("chai_stall")
+	else:
+		if _is_pressing_stall and not is_running:
+			EconomyService.tap_business("chai_stall")
+			if tutorial_overlay.is_active and tutorial_overlay.current_step == 1:
+				tutorial_overlay.advance_to_step(2)
+		tap_ring.value = progress * 100.0
+
+	# Cycle finished event
+	if _serving_progress > 0.8 and progress < 0.2:
+		_spawn_customer_purchase_effect()
+		var cycle_rev: BigNumber = IncomeModel.cycle_revenue(EconomyService.config, EconomyService.config.get_business("chai_stall"), b_state)
+		_pop_cash_number(cycle_rev)
+
+	_serving_progress = progress
 
 func _update_stall_visuals() -> void:
-	var tier: int = EconomyService.get_visual_tier("chai_stall")
-	match tier:
-		1: stall_sprite.texture = tex_lvl1
-		2: stall_sprite.texture = tex_lvl2
-		3: stall_sprite.texture = tex_lvl3
-		_: stall_sprite.texture = tex_lvl1
+	var b_state: Dictionary = EconomyService.get_business_state("chai_stall")
+	var levels: Dictionary = b_state.get("levels", {})
+	var total_lvl: int = 0
+	for l in levels.values():
+		total_lvl += int(l)
+
+	if total_lvl >= 50:
+		stall_sprite.texture = tex_lvl3
+	elif total_lvl >= 25:
+		stall_sprite.texture = tex_lvl2
+	else:
+		stall_sprite.texture = tex_lvl1
 
 func _request_hud_refresh() -> void:
 	pass
@@ -186,9 +190,9 @@ func _request_hud_refresh() -> void:
 func _refresh_hud_now() -> void:
 	if not EconomyService:
 		return
-	var c := EconomyService.get_cash()
+	var c: BigNumber = EconomyService.get_cash()
 	cash_label.text = "₹ %s" % c.to_formatted(false)
-	var inc := EconomyService.get_income_per_second()
+	var inc: BigNumber = EconomyService.get_income_per_second()
 	income_label.text = "+₹ %s / s" % inc.to_formatted(false)
 
 func _pop_cash_number(earned: BigNumber) -> void:

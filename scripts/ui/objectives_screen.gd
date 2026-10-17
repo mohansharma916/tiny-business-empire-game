@@ -8,7 +8,6 @@ var _is_open: bool = false
 @onready var close_btn: Button = $SafeContainer/PanelRoot/VBox/Header/CloseButton
 @onready var list_container: VBoxContainer = $SafeContainer/PanelRoot/VBox/Scroll/ListContainer
 
-# Tracking dictionary
 var objectives_data: Array[Dictionary] = [
 	{
 		"id": "obj_first_customer",
@@ -81,10 +80,14 @@ func refresh_objectives() -> void:
 	for child in list_container.get_children():
 		child.queue_free()
 
-	var b_state := EconomyService.get_business_state("chai_stall")
-	var total_lvl: int = EconomyService.get_total_business_level("chai_stall")
+	var b_state: Dictionary = EconomyService.get_business_state("chai_stall")
+	var levels: Dictionary = b_state.get("levels", {})
+	var total_lvl: int = 0
+	for l in levels.values():
+		total_lvl += int(l)
+
 	var workers: int = int(b_state.get("workers", 0))
-	var is_auto: bool = b_state.get("is_automated", false)
+	var is_auto: bool = b_state.get("automated", false)
 
 	for obj in objectives_data:
 		var card := _create_objective_card(obj, total_lvl, workers, is_auto)
@@ -119,14 +122,13 @@ func _create_objective_card(obj: Dictionary, total_lvl: int, workers: int, is_au
 	desc.add_theme_color_override("font_color", Color(0.7, 0.75, 0.85))
 	vbox.add_child(desc)
 
-	# Calculate current value
 	var current_val: int = 0
 	match obj["id"]:
 		"obj_first_customer": current_val = 1 if total_lvl >= 4 else 0
 		"obj_first_upgrade": current_val = mini(obj["target"], total_lvl)
 		"obj_hire_worker": current_val = mini(obj["target"], workers)
 		"obj_automate": current_val = 1 if is_auto else 0
-		"obj_offline": current_val = 1 # Available / completed on testing offline button
+		"obj_offline": current_val = 1
 
 	var prog_lbl := Label.new()
 	prog_lbl.text = "Progress: %d / %d" % [current_val, int(obj["target"])]
@@ -136,7 +138,6 @@ func _create_objective_card(obj: Dictionary, total_lvl: int, workers: int, is_au
 
 	hbox.add_child(vbox)
 
-	# Action Button
 	var btn := Button.new()
 	btn.custom_minimum_size = Vector2(110, 48)
 
@@ -156,7 +157,6 @@ func _create_objective_card(obj: Dictionary, total_lvl: int, workers: int, is_au
 
 func _claim_objective(obj: Dictionary) -> void:
 	obj["claimed"] = true
-	var reward := BigNumber.from_float(float(obj["reward"]))
-	EconomyService.cash = EconomyService.cash.add(reward)
-	EconomyService.cash_changed.emit(EconomyService.cash)
+	var reward: BigNumber = BigNumber.from_float(float(obj["reward"]))
+	EconomyService.grant_reward(reward)
 	refresh_objectives()

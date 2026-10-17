@@ -5,7 +5,7 @@ signal closed
 
 @export var business_id: String = "chai_stall"
 
-var current_bulk: Variant = 1
+var current_bulk: int = 1 # 1, 10 or EconomyService.BULK_MAX (-1)
 var _is_open: bool = false
 
 # UI Nodes
@@ -34,7 +34,7 @@ func _ready() -> void:
 	close_btn.pressed.connect(close_panel)
 	bulk_1_btn.pressed.connect(func(): _set_bulk(1))
 	bulk_10_btn.pressed.connect(func(): _set_bulk(10))
-	bulk_max_btn.pressed.connect(func(): _set_bulk("max"))
+	bulk_max_btn.pressed.connect(func(): _set_bulk(EconomyService.BULK_MAX))
 
 	hire_manager_btn.pressed.connect(_on_hire_manager)
 	hire_worker_btn.pressed.connect(_on_hire_worker)
@@ -67,28 +67,31 @@ func close_panel() -> void:
 	visible = false
 	closed.emit()
 
-func _set_bulk(b: Variant) -> void:
+func _set_bulk(b: int) -> void:
 	current_bulk = b
 	bulk_1_btn.flat = (current_bulk != 1)
 	bulk_10_btn.flat = (current_bulk != 10)
-	bulk_max_btn.flat = (str(current_bulk) != "max")
+	bulk_max_btn.flat = (current_bulk != EconomyService.BULK_MAX)
 	refresh()
 
 func refresh() -> void:
 	if not _is_open or not EconomyService:
 		return
 
-	var b_state := EconomyService.get_business_state(business_id)
+	var b_state: Dictionary = EconomyService.get_business_state(business_id)
 	if b_state.is_empty():
 		return
 
-	var b_cfg := EconomyService.get_business_config(business_id)
-
+	var b_cfg: Dictionary = EconomyService.config.get_business(business_id)
 	title_label.text = b_cfg.get("name", "Business")
-	var total_lvl: int = EconomyService.get_total_business_level(business_id)
+
+	var levels: Dictionary = b_state.get("levels", {})
+	var total_lvl: int = 0
+	for lvl in levels.values():
+		total_lvl += int(lvl)
 	level_label.text = "Lv. %d" % total_lvl
 
-	var is_auto: bool = b_state.get("is_automated", false)
+	var is_auto: bool = b_state.get("automated", false)
 	if is_auto:
 		status_badge.text = "AUTOMATED"
 		status_badge.modulate = Color(0.2, 0.9, 0.4)
@@ -96,33 +99,36 @@ func refresh() -> void:
 		status_badge.text = "MANUAL (TAP)"
 		status_badge.modulate = Color(1.0, 0.7, 0.2)
 
-	var cycle_time := EconomyService.calculate_cycle_time(business_id)
-	cycle_time_label.text = "Cycle: %.1fs" % cycle_time
+	var cycle_sec: float = float(b_state.get("cycle_seconds", 2.0))
+	cycle_time_label.text = "Cycle: %.1fs" % cycle_sec
 
-	var cycle_rev: BigNumber = EconomyService.calculate_cycle_revenue(business_id)
-	var rate: BigNumber = cycle_rev.div(cycle_time)
-	income_rate_label.text = "₹ %s / s" % rate.to_formatted(false)
+	var income_rate: BigNumber = b_state.get("income_per_second", BigNumber.zero())
+	income_rate_label.text = "₹ %s / s" % income_rate.to_formatted(false)
 
-	# Staff updates
+	# Staff: Manager
 	if is_auto or b_state.get("has_manager", false):
 		hire_manager_btn.text = "Manager Hired ✓"
 		hire_manager_btn.disabled = true
 	else:
-		var staff_cfg: Dictionary = b_cfg.get("staff", {})
-		var mgr_cost := BigNumber.from_float(float(staff_cfg.get("manager_cost", 500.0)))
+		var mgr_cost: BigNumber = EconomyService.get_staff_cost(business_id, "manager")
 		hire_manager_btn.text = "Hire Manager (₹ %s)" % mgr_cost.to_formatted(false)
 		hire_manager_btn.disabled = not EconomyService.can_afford(mgr_cost)
 
+	# Staff: Worker
+	var worker_cost: BigNumber = EconomyService.get_staff_cost(business_id, "worker")
 	var workers_count: int = int(b_state.get("workers", 0))
-	var worker_cost := BigNumber.from_float(float(b_cfg.get("staff", {}).get("worker_cost", 100.0)))
-	hire_worker_btn.text = "Worker (%d) +20%% (₹ %s)" % [workers_count, worker_cost.to_formatted(false)]
-	hire_worker_btn.disabled = not EconomyService.can_afford(worker_cost)
+	if worker_cost.is_zero():
+		hire_worker_btn.text = "Worker (Max) ✓"
+		hire_worker_btn.disabled = true
+	else:
+		hire_worker_btn.text = "Worker (%d) +20%% (₹ %s)" % [workers_count, worker_cost.to_formatted(false)]
+		hire_worker_btn.disabled = not EconomyService.can_afford(worker_cost)
 
 	_refresh_tracks(b_state)
 
 func _refresh_tracks(b_state: Dictionary) -> void:
 	var track_keys: Array = ["equipment", "capacity", "quality", "marketing"]
-	var tracks_dict: Dictionary = b_state.get("tracks", {})
+	var levels_dict: Dictionary = b_state.get("levels", {})
 
 	for i in range(track_keys.size()):
 		var t_key: String = track_keys[i]
@@ -130,23 +136,25 @@ func _refresh_tracks(b_state: Dictionary) -> void:
 		if not track_node:
 			continue
 
-		var lvl: int = int(tracks_dict.get(t_key, 1))
+		var lvl: int = int(levels_dict.get(t_key, 1))
 		var lvl_lbl: Label = track_node.get_node("HBox/InfoVBox/LevelLabel")
 		lvl_lbl.text = "Level %d" % lvl
 
-		var buy_count: int = EconomyService.get_upgrade_levels_to_buy(business_id, t_key, current_bulk)
-		var cost := EconomyService.get_upgrade_cost(business_id, t_key, current_bulk)
-
+		var cost: BigNumber = EconomyService.get_upgrade_cost(business_id, t_key, current_bulk)
 		var buy_btn: Button = track_node.get_node("HBox/BuyButton")
-		var count_str: String = ("+ %d" % buy_count) if buy_count > 1 else "UPGRADE"
-		buy_btn.text = "%s\n₹ %s" % [count_str, cost.to_formatted(false)]
+		var bulk_label_str: String = "UPGRADE"
+		if current_bulk == 10:
+			bulk_label_str = "+ 10"
+		elif current_bulk == EconomyService.BULK_MAX:
+			bulk_label_str = "+ Max"
+
+		buy_btn.text = "%s\n₹ %s" % [bulk_label_str, cost.to_formatted(false)]
 		buy_btn.disabled = not EconomyService.can_afford(cost)
 
-		# Disconnect any old signal connection safely and reconnect
 		for c in buy_btn.pressed.get_connections():
 			buy_btn.pressed.disconnect(c.callable)
 		buy_btn.pressed.connect(func():
-			if EconomyService.buy_upgrade(business_id, t_key, current_bulk):
+			if EconomyService.buy_upgrade(business_id, t_key, current_bulk) > 0:
 				refresh()
 		)
 

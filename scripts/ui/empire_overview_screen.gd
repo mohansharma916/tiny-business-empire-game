@@ -41,16 +41,22 @@ func refresh_stats() -> void:
 	if not EconomyService:
 		return
 
-	var owned_count: int = EconomyService.owned_businesses.size()
+	var owned_count: int = 0
+	if EconomyService.config:
+		for b_id: String in EconomyService.config.businesses:
+			var b_state: Dictionary = EconomyService.get_business_state(b_id)
+			if b_state.get("owned", false):
+				owned_count += 1
+	else:
+		owned_count = 1
+
 	businesses_owned_label.text = "%d / 5" % owned_count
 
-	var inc := EconomyService.get_income_per_second()
+	var inc: BigNumber = EconomyService.get_income_per_second()
 	income_rate_label.text = "₹ %s / s" % inc.to_formatted(false)
 
-	# Cash + spent estimate for lifetime
-	var cash := EconomyService.get_cash()
-	lifetime_label.text = "₹ %s" % cash.to_formatted(false)
+	var lifetime: BigNumber = EconomyService.get_lifetime_earnings()
+	lifetime_label.text = "₹ %s" % lifetime.to_formatted(false)
 
 	city_level_label.text = "Starter Street (Lv. 1)"
-
 	expansion_desc.text = "Own 3 businesses and earn ₹ 50K lifetime cash to expand into Market Lane."
