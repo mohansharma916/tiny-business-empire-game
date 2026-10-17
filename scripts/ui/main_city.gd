@@ -1,7 +1,7 @@
 class_name MainCity
 extends Control
 
-# City scene with Chai Stall, customer pooling, HUD, and panel management
+# City scene with Chai Stall, customer pooling, HUD, tutorial, and panel management
 
 @onready var city_world: Node2D = $CityWorld
 @onready var stall_sprite: Sprite2D = $CityWorld/StallPlot/StallSprite
@@ -10,14 +10,20 @@ extends Control
 @onready var cash_float_anchor: Marker2D = $CityWorld/StallPlot/CashFloatAnchor
 
 # HUD Nodes
-@onready var cash_label: Label = $SafeContainer/TopHUD/HBox/CashCard/CashLabel
-@onready var income_label: Label = $SafeContainer/TopHUD/HBox/IncomeCard/IncomeLabel
-@onready var offline_btn: Button = $SafeContainer/TopHUD/HBox/OfflineTestButton
+@onready var cash_label: Label = $SafeContainer/TopHUD/VBox/StatsRow/CashCard/CashLabel
+@onready var income_label: Label = $SafeContainer/TopHUD/VBox/StatsRow/IncomeCard/IncomeLabel
+
+@onready var goals_btn: Button = $SafeContainer/TopHUD/VBox/NavRow/GoalsButton
+@onready var empire_btn: Button = $SafeContainer/TopHUD/VBox/NavRow/EmpireButton
+@onready var offline_btn: Button = $SafeContainer/TopHUD/VBox/NavRow/OfflineTestButton
 @onready var details_btn: Button = $SafeContainer/BottomHUD/DetailsButton
 
 # Panel references (instantiated once and reused)
 @onready var details_panel: BusinessDetailsPanel = $Panels/BusinessDetailsPanel
 @onready var offline_screen: OfflineEarningsScreen = $Panels/OfflineEarningsScreen
+@onready var objectives_screen: ObjectivesScreen = $Panels/ObjectivesScreen
+@onready var empire_screen: EmpireOverviewScreen = $Panels/EmpireOverviewScreen
+@onready var tutorial_overlay: TutorialOverlay = $Panels/TutorialOverlay
 
 # Customer pool
 @onready var customer_container: Node2D = $CityWorld/Customers
@@ -53,19 +59,25 @@ func _ready() -> void:
 	_update_stall_visuals()
 	_refresh_hud_now()
 
+	# Start onboarding tutorial on first session
+	tutorial_overlay.start_tutorial()
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		_handle_android_back_button()
 
 func _handle_android_back_button() -> void:
 	# Close the topmost open panel first
-	if offline_screen.visible:
+	if objectives_screen.visible:
+		objectives_screen.close_screen()
+	elif empire_screen.visible:
+		empire_screen.close_screen()
+	elif offline_screen.visible:
 		offline_screen.close_screen()
 	elif details_panel.visible:
 		details_panel.close_panel()
-	else:
-		# Already on main city, ignore or ask to quit
-		pass
+	elif tutorial_overlay.visible:
+		tutorial_overlay.skip_tutorial()
 
 func _apply_safe_area() -> void:
 	var safe := DisplayServer.get_display_safe_area()
@@ -80,17 +92,31 @@ func _apply_safe_area() -> void:
 func _setup_panel_events() -> void:
 	details_btn.pressed.connect(open_business_details)
 	offline_btn.pressed.connect(open_offline_earnings)
+	goals_btn.pressed.connect(open_objectives)
+	empire_btn.pressed.connect(open_empire_overview)
 
 	details_panel.closed.connect(_on_panel_closed)
 	offline_screen.closed.connect(func(_a): _on_panel_closed())
+	objectives_screen.closed.connect(_on_panel_closed)
+	empire_screen.closed.connect(_on_panel_closed)
 
 func open_business_details() -> void:
 	_pause_city(true)
 	details_panel.open_business("chai_stall")
+	if tutorial_overlay.is_active and tutorial_overlay.current_step == 2:
+		tutorial_overlay.advance_to_step(3)
 
 func open_offline_earnings() -> void:
 	_pause_city(true)
 	offline_screen.show_offline_earnings(3600.0)
+
+func open_objectives() -> void:
+	_pause_city(true)
+	objectives_screen.open_screen()
+
+func open_empire_overview() -> void:
+	_pause_city(true)
+	empire_screen.open_screen()
 
 func _on_panel_closed() -> void:
 	_pause_city(false)
@@ -138,6 +164,8 @@ func _process_serving_cycle(delta: float) -> void:
 				var earned: BigNumber = result.get("revenue", BigNumber.zero())
 				_pop_cash_number(earned)
 				_spawn_customer_purchase_effect()
+				if tutorial_overlay.is_active and tutorial_overlay.current_step == 1:
+					tutorial_overlay.advance_to_step(2)
 			tap_ring.value = _serving_progress * 100.0
 		else:
 			# Decay slowly if released
@@ -153,7 +181,6 @@ func _update_stall_visuals() -> void:
 		_: stall_sprite.texture = tex_lvl1
 
 func _request_hud_refresh() -> void:
-	# The actual update is metered at 4 Hz in _process
 	pass
 
 func _refresh_hud_now() -> void:
@@ -187,14 +214,13 @@ func _setup_customer_pool() -> void:
 
 		var spr := Sprite2D.new()
 		spr.texture = tex_customer
-		spr.scale = Vector2(0.18, 0.18) # Nicely scaled for isometric sidewalk
+		spr.scale = Vector2(0.18, 0.18)
 		cust.add_child(spr)
 
 		customer_container.add_child(cust)
 		customer_pool.append(cust)
 
 func _spawn_customer_purchase_effect() -> void:
-	# Pick an inactive pooled customer and start walk sequence
 	for cust in customer_pool:
 		if not cust.visible:
 			_launch_customer(cust)
@@ -202,7 +228,6 @@ func _spawn_customer_purchase_effect() -> void:
 
 func _launch_customer(cust: Node2D) -> void:
 	cust.visible = true
-	# Start at street corner, walk toward stall counter, then exit
 	var start_pos := Vector2(80, 720)
 	var stall_pos := Vector2(280, 580)
 	var end_pos := Vector2(580, 760)
@@ -216,7 +241,6 @@ func _launch_customer(cust: Node2D) -> void:
 
 func _process_customer_movement(delta: float) -> void:
 	_customer_spawn_timer += delta
-	# Ambient spawn every 2.5s
 	if _customer_spawn_timer >= 2.5:
 		_customer_spawn_timer = 0.0
 		_spawn_customer_purchase_effect()
