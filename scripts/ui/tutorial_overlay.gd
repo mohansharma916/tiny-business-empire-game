@@ -9,9 +9,9 @@ var is_active: bool = false
 var strings: Dictionary = {}
 
 @onready var prompt_box: PanelContainer = $SafeContainer/PromptBox
-@onready var title_label: Label = $SafeContainer/PromptBox/VBox/TitleLabel
+@onready var title_label: Label = $SafeContainer/PromptBox/VBox/Header/TitleLabel
 @onready var desc_label: Label = $SafeContainer/PromptBox/VBox/DescLabel
-@onready var skip_btn: Button = $SafeContainer/TopBar/SkipButton
+@onready var skip_btn: Button = $SafeContainer/PromptBox/VBox/Header/SkipButton
 @onready var next_btn: Button = $SafeContainer/PromptBox/VBox/NextButton
 @onready var highlight_pointer: Control = $HighlightPointer
 
@@ -55,7 +55,7 @@ func _apply_step(step: int) -> void:
 			title_label.text = strings.get("step_1_title", "Welcome to Starter Street!")
 			desc_label.text = strings.get("step_1_desc", "Press and hold the Chai Stall to brew fresh tea for your first customer.")
 			next_btn.visible = false # Advances automatically on serve!
-			highlight_pointer.position = Vector2(220, 400)
+			highlight_pointer.position = Vector2(250, 610)
 			highlight_pointer.visible = true
 		2:
 			title_label.text = strings.get("step_2_title", "First Sale!")

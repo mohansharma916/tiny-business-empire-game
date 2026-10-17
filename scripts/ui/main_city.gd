@@ -286,8 +286,11 @@ func _process(delta: float) -> void:
 	_process_serving_cycles()
 	_process_customer_movement(delta)
 
+const STARTER_PLOTS: Array[String] = ["chai_stall", "pani_puri_cart", "fruit_stand"]
+const MARKET_PLOTS: Array[String] = ["bakery", "cafe"]
+
 func _process_serving_cycles() -> void:
-	var plot_ids: Array[String] = ["chai_stall", "pani_puri_cart", "fruit_stand"] if current_location == "starter_street" else ["bakery", "cafe"]
+	var plot_ids: Array[String] = STARTER_PLOTS if current_location == "starter_street" else MARKET_PLOTS
 	for b_id in plot_ids:
 		var b_state: Dictionary = EconomyService.get_business_state(b_id)
 		if not b_state.get("owned", false):
